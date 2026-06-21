@@ -1,12 +1,27 @@
+import { useState } from 'react';
+import { Sun, Moon } from 'lucide-react';
 import PixelBlast from './components/PixelBlast';
 import CardNav from './components/CardNav';
 import type { CardNavItem } from './components/CardNav';
+import genesisImg from './assets/TheGenesis.png';
 import './App.css';
+
+// Section components
+import AboutSection from './components/AboutSection';
+import WhySection from './components/WhySection';
+import TopicsSection from './components/TopicsSection';
+import SpeakersSection from './components/SpeakersSection';
+import EventDetailsSection from './components/EventDetailsSection';
+import AttendeesSection from './components/AttendeesSection';
+import PartnersSection from './components/PartnersSection';
+import FaqSection from './components/FaqSection';
+import CtaSection from './components/CtaSection';
+import Footer from './components/Footer';
 
 const navItems: CardNavItem[] = [
   {
     label: 'Syllabus',
-    bgColor: '#b497cf',
+    bgColor: '#ffffff',
     textColor: '#0f0c1b',
     links: [
       { label: 'Intro to Bitcoin', href: '#intro', ariaLabel: 'Learn Bitcoin basics' },
@@ -37,10 +52,36 @@ const navItems: CardNavItem[] = [
 ];
 
 function App() {
+  const [isDarkBg, setIsDarkBg] = useState<boolean>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('workshop-bg');
+      if (saved) {
+        return saved === 'dark';
+      }
+      return window.matchMedia('(prefers-color-scheme: dark)').matches;
+    }
+    return false;
+  });
+
+  const toggleTheme = () => {
+    const nextVal = !isDarkBg;
+    setIsDarkBg(nextVal);
+    localStorage.setItem('workshop-bg', nextVal ? 'dark' : 'light');
+  };
+
   return (
-    <div className="app-container">
+    <div className={`app-container ${isDarkBg ? 'dark-bg' : ''}`}>
       {/* Interactive CardNav */}
       <CardNav logo="GENESIS" items={navItems} />
+
+      {/* Theme Switcher Button */}
+      <button 
+        onClick={toggleTheme} 
+        className="theme-toggle-btn" 
+        aria-label={`Switch to ${isDarkBg ? 'light' : 'dark'} mode`}
+      >
+        {isDarkBg ? <Sun size={18} /> : <Moon size={18} />}
+      </button>
 
       {/* Header featuring PixelBlast */}
       <header className="hero-header">
@@ -68,25 +109,34 @@ function App() {
         
         {/* Minimalist Overlay Content */}
         <div className="header-overlay">
-          <div className="header-content pt-[80px]">
-            <span className="subtitle-tag">OSGUILD PRESENTS</span>
-            <h1 className="main-title">THE GENESIS WORKSHOP</h1>
-            <p className="description">
-              A minimalist, hands-on workshop focused on building clean digital infrastructure.
-            </p>
+          <div className="header-content-wrapper">
+            <div className="header-text-side">
+              <span className="subtitle-tag">OSGUILD PRESENTS</span>
+              <h1 className="main-title">THE GENESIS WORKSHOP</h1>
+              <p className="description">
+                A minimalist, hands-on workshop focused on building clean digital infrastructure.
+              </p>
+            </div>
+            <div className="header-image-side">
+              <img src={genesisImg} alt="The Genesis Workshop" className="genesis-image" />
+            </div>
           </div>
         </div>
       </header>
 
-      {/* Main content placeholder for workshop page */}
-      <main className="content-main">
-        <section className="section-intro">
-          <h2>Getting Started</h2>
-          <p>
-            Welcome to the Genesis Workshop workspace. Start modifying <code>src/App.tsx</code> or build new components inside the structured directory to customize this page.
-          </p>
-        </section>
+      {/* Main content sections */}
+      <main className="w-full flex-grow">
+        <AboutSection />
+        <WhySection />
+        <TopicsSection />
+        <SpeakersSection />
+        <EventDetailsSection />
+        <AttendeesSection />
+        <PartnersSection />
+        <FaqSection />
+        <CtaSection />
       </main>
+      <Footer />
     </div>
   );
 }
