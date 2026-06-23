@@ -1,6 +1,6 @@
 import React from 'react';
 import SectionHeading from './ui/SectionHeading';
-import GlassCard from './ui/GlassCard';
+import SpotlightCard from './SpotlightCard';
 import { whyCards } from '../data/whyCards';
 import { Compass, Cpu, Users } from 'lucide-react';
 
@@ -23,7 +23,7 @@ const WhySection: React.FC = () => {
       <SectionHeading eyebrow="why genesis" title="Why We Built Genesis" />
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {whyCards.map((card) => (
-          <GlassCard key={card.id} className="flex flex-col items-start text-left h-full">
+          <SpotlightCard key={card.id} className="flex flex-col items-start text-left h-full">
             <div className="mb-4">
               {getIcon(card.icon)}
             </div>
@@ -33,7 +33,7 @@ const WhySection: React.FC = () => {
             <p className="text-sm text-[var(--color-ink-dim)] leading-relaxed mt-auto">
               {card.description}
             </p>
-          </GlassCard>
+          </SpotlightCard>
         ))}
       </div>
     </section>

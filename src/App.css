@@ -24,9 +24,10 @@
   --shadow: rgba(0, 0, 0, 0.03) 0px 8px 24px, rgba(0, 0, 0, 0.02) 0px 2px 8px;
 
   /* Custom Color Tokens - Light */
-  --color-orange: #F7931A;
-  --color-orange-dim: #D97F12;
+  --color-orange: #34C759;
+  --color-orange-dim: #248a3d;
   --color-cyan: #57E0C9;
+  --spotlight-color: rgba(52, 199, 89, 0.08);
   --color-bg-soft: #f4f3f6;
   --color-ink: #0f0c1b;
   --color-ink-dim: #5c5963;
@@ -51,9 +52,10 @@
   --nav-bg: rgba(11, 10, 13, 0.45);
 
   /* Custom Color Tokens - Dark */
-  --color-orange: #F7931A;
-  --color-orange-dim: #D97F12;
+  --color-orange: #34C759;
+  --color-orange-dim: #248a3d;
   --color-cyan: #57E0C9;
+  --spotlight-color: rgba(52, 199, 89, 0.15);
   --color-bg-soft: #111317;
   --color-ink: #f4f3f6;
   --color-ink-dim: #a19da8;
@@ -133,7 +135,7 @@
   font-size: 12px;
   letter-spacing: 0.25em;
   text-transform: uppercase;
-  color: var(--accent);
+  color: var(--text-h);
   margin-bottom: 16px;
   font-weight: 600;
   opacity: 0.85;
@@ -255,14 +257,14 @@
   backdrop-filter: blur(18px) saturate(140%);
   border: 1.5px solid var(--color-line);
   border-radius: 10px;
-  box-shadow: 4px 4px 0 0 rgba(247, 147, 26, 0.35);
+  box-shadow: 4px 4px 0 0 rgba(52, 199, 89, 0.35);
   transition: transform 250ms ease, box-shadow 250ms ease, background-color 250ms ease;
 }
 
 @media (prefers-reduced-motion: no-preference) {
   .glass-card-hover:hover {
     transform: translate(-2px, -2px);
-    box-shadow: 6px 6px 0 0 rgba(247, 147, 26, 0.5);
+    box-shadow: 6px 6px 0 0 rgba(52, 199, 89, 0.5);
     background-color: var(--color-glass-strong);
   }
 }

@@ -1,6 +1,6 @@
 import React from 'react';
 import SectionHeading from './ui/SectionHeading';
-import GlassCard from './ui/GlassCard';
+import SpotlightCard from './SpotlightCard';
 import { topics } from '../data/topics';
 import { GitBranch, Github, Sparkles, Eye, Bitcoin, Radio } from 'lucide-react';
 
@@ -30,7 +30,7 @@ const TopicsSection: React.FC = () => {
       <SectionHeading eyebrow="topics covered" title="Topics Covered" />
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {topics.map((topic) => (
-          <GlassCard key={topic.id} className="flex flex-col items-start text-left h-full">
+          <SpotlightCard key={topic.id} className="flex flex-col items-start text-left h-full">
             <div className="mb-4">
               {getIcon(topic.icon)}
             </div>
@@ -40,7 +40,7 @@ const TopicsSection: React.FC = () => {
             <p className="text-sm text-[var(--color-ink-dim)] leading-relaxed">
               {topic.description}
             </p>
-          </GlassCard>
+          </SpotlightCard>
         ))}
       </div>
     </section>

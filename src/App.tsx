@@ -10,6 +10,7 @@ import './App.css';
 import AboutSection from './components/AboutSection';
 import WhySection from './components/WhySection';
 import TopicsSection from './components/TopicsSection';
+import AgendaSection from './components/AgendaSection';
 import SpeakersSection from './components/SpeakersSection';
 import EventDetailsSection from './components/EventDetailsSection';
 import AttendeesSection from './components/AttendeesSection';
@@ -111,10 +112,10 @@ function App() {
         <div className="header-overlay">
           <div className="header-content-wrapper">
             <div className="header-text-side">
-              <span className="subtitle-tag">OSGUILD PRESENTS</span>
+              <span className="subtitle-tag">Mauritius 🇲🇺 - 25th July 2026</span>
               <h1 className="main-title">THE GENESIS WORKSHOP</h1>
               <p className="description">
-                A minimalist, hands-on workshop focused on building clean digital infrastructure.
+                An in-person Workshop designed to help developers step confidently into the world of open source
               </p>
             </div>
             <div className="header-image-side">
@@ -129,6 +130,7 @@ function App() {
         <AboutSection />
         <WhySection />
         <TopicsSection />
+        <AgendaSection />
         <SpeakersSection />
         <EventDetailsSection />
         <AttendeesSection />
