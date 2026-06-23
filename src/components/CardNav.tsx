@@ -1,239 +1,107 @@
-import React, { useLayoutEffect, useRef, useState } from 'react';
-import { gsap } from 'gsap';
-import { ArrowUpRight } from 'lucide-react';
-
-type CardNavLink = {
-  label: string;
-  href: string;
-  ariaLabel: string;
-};
-
-export type CardNavItem = {
-  label: string;
-  bgColor: string;
-  textColor: string;
-  links: CardNavLink[];
-};
+import React, { useState } from 'react';
+import { Sun, Moon, Menu, X } from 'lucide-react';
 
 export interface CardNavProps {
   logo: string;
-  logoAlt?: string;
-  items: CardNavItem[];
+  isDarkBg: boolean;
+  toggleTheme: () => void;
   className?: string;
-  ease?: string;
-  baseColor?: string;
-  menuColor?: string;
-  buttonBgColor?: string;
-  buttonTextColor?: string;
 }
 
 const CardNav: React.FC<CardNavProps> = ({
   logo,
-  logoAlt = 'Logo',
-  items,
-  className = '',
-  ease = 'power3.out',
-  baseColor = 'var(--nav-bg)',
-  menuColor,
-  buttonBgColor = 'var(--accent)',
-  buttonTextColor = 'var(--bg)'
+  isDarkBg,
+  toggleTheme,
+  className = ''
 }) => {
-  const [isHamburgerOpen, setIsHamburgerOpen] = useState(false);
-  const [isExpanded, setIsExpanded] = useState(false);
-  const navRef = useRef<HTMLDivElement | null>(null);
-  const cardsRef = useRef<HTMLDivElement[]>([]);
-  const tlRef = useRef<gsap.core.Timeline | null>(null);
+  const [isOpen, setIsOpen] = useState(false);
 
-  const calculateHeight = () => {
-    const navEl = navRef.current;
-    if (!navEl) return 260;
-
-    const isMobile = window.matchMedia('(max-width: 768px)').matches;
-    if (isMobile) {
-      const contentEl = navEl.querySelector('.card-nav-content') as HTMLElement;
-      if (contentEl) {
-        const wasVisible = contentEl.style.visibility;
-        const wasPointerEvents = contentEl.style.pointerEvents;
-        const wasPosition = contentEl.style.position;
-        const wasHeight = contentEl.style.height;
-
-        contentEl.style.visibility = 'visible';
-        contentEl.style.pointerEvents = 'auto';
-        contentEl.style.position = 'static';
-        contentEl.style.height = 'auto';
-
-        contentEl.offsetHeight;
-
-        const topBar = 60;
-        const padding = 16;
-        const contentHeight = contentEl.scrollHeight;
-
-        contentEl.style.visibility = wasVisible;
-        contentEl.style.pointerEvents = wasPointerEvents;
-        contentEl.style.position = wasPosition;
-        contentEl.style.height = wasHeight;
-
-        return topBar + contentHeight + padding;
-      }
-    }
-    return 260;
-  };
-
-  const createTimeline = () => {
-    const navEl = navRef.current;
-    if (!navEl) return null;
-
-    gsap.set(navEl, { height: 60, overflow: 'hidden' });
-    gsap.set(cardsRef.current, { y: 50, opacity: 0 });
-
-    const tl = gsap.timeline({ paused: true });
-
-    tl.to(navEl, {
-      height: calculateHeight,
-      duration: 0.4,
-      ease
-    });
-
-    tl.to(cardsRef.current, { y: 0, opacity: 1, duration: 0.4, ease, stagger: 0.08 }, '-=0.1');
-
-    return tl;
-  };
-
-  useLayoutEffect(() => {
-    const tl = createTimeline();
-    tlRef.current = tl;
-
-    return () => {
-      tl?.kill();
-      tlRef.current = null;
-    };
-  }, [ease, items]);
-
-  useLayoutEffect(() => {
-    const handleResize = () => {
-      if (!tlRef.current) return;
-
-      if (isExpanded) {
-        const newHeight = calculateHeight();
-        gsap.set(navRef.current, { height: newHeight });
-
-        tlRef.current.kill();
-        const newTl = createTimeline();
-        if (newTl) {
-          newTl.progress(1);
-          tlRef.current = newTl;
-        }
-      } else {
-        tlRef.current.kill();
-        const newTl = createTimeline();
-        if (newTl) {
-          tlRef.current = newTl;
-        }
-      }
-    };
-
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, [isExpanded]);
-
-  const toggleMenu = () => {
-    const tl = tlRef.current;
-    if (!tl) return;
-    if (!isExpanded) {
-      setIsHamburgerOpen(true);
-      setIsExpanded(true);
-      tl.play(0);
-    } else {
-      setIsHamburgerOpen(false);
-      tl.eventCallback('onReverseComplete', () => setIsExpanded(false));
-      tl.reverse();
-    }
-  };
-
-  const setCardRef = (i: number) => (el: HTMLDivElement | null) => {
-    if (el) cardsRef.current[i] = el;
-  };
+  const links = [
+    { label: 'About', href: '#about' },
+    { label: 'Career Pathway', href: '#career-pathway' },
+    { label: 'Speakers', href: '#speakers' },
+    { label: 'Agenda', href: '#agenda' },
+    { label: 'Venue', href: '#details' }
+  ];
 
   return (
-    <div
-      className={`card-nav-container absolute left-1/2 -translate-x-1/2 w-[90%] max-w-[800px] z-[99] top-[1.2em] md:top-[2em] ${className}`}
-    >
-      <nav
-        ref={navRef}
-        className={`card-nav ${isExpanded ? 'open' : ''} block h-[60px] p-0 rounded-xl shadow-md border border-white/10 dark:border-white/5 backdrop-blur-xl relative overflow-hidden will-change-[height]`}
-        style={{ backgroundColor: baseColor }}
-      >
-        <div className="card-nav-top absolute inset-x-0 top-0 h-[60px] flex items-center justify-between p-2 pl-[1.1rem] z-[2]">
-          <div
-            className={`hamburger-menu ${isHamburgerOpen ? 'open' : ''} group h-full flex flex-col items-center justify-center cursor-pointer gap-[6px] order-2 md:order-none`}
-            onClick={toggleMenu}
-            role="button"
-            aria-label={isExpanded ? 'Close menu' : 'Open menu'}
-            tabIndex={0}
-            style={{ color: menuColor || 'var(--text-h)' }}
-          >
-            <div
-              className={`hamburger-line w-[30px] h-[2px] bg-current transition-[transform,opacity,margin] duration-300 ease-linear [transform-origin:50%_50%] ${
-                isHamburgerOpen ? 'translate-y-[4px] rotate-45' : ''
-              } group-hover:opacity-75`}
-            />
-            <div
-              className={`hamburger-line w-[30px] h-[2px] bg-current transition-[transform,opacity,margin] duration-300 ease-linear [transform-origin:50%_50%] ${
-                isHamburgerOpen ? '-translate-y-[4px] -rotate-45' : ''
-              } group-hover:opacity-75`}
-            />
+    <div className={`card-nav-container absolute left-1/2 -translate-x-1/2 w-[90%] max-w-[1000px] z-[99] top-[1.2em] md:top-[2em] ${className}`}>
+      <nav className="w-full bg-[var(--nav-bg)] border border-[var(--color-line)] backdrop-blur-xl rounded-2xl shadow-md px-6 py-3 transition-all duration-300">
+        <div className="flex items-center justify-between">
+          {/* Logo */}
+          <div className="logo-container flex items-center">
+            <span className="logo-text font-bold tracking-tight text-xl text-[var(--color-ink)] font-heading select-none">
+              {logo}
+            </span>
           </div>
 
-          <div className="logo-container flex items-center md:absolute md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 order-1 md:order-none">
-            {logo.endsWith('.svg') || logo.startsWith('data:') || logo.includes('/') ? (
-              <img src={logo} alt={logoAlt} className="logo h-[28px]" />
-            ) : (
-              <span className="logo-text font-bold tracking-tight text-[18px] text-[var(--text-h)]">{logo}</span>
-            )}
+          {/* Desktop Navigation Links */}
+          <div className="hidden md:flex items-center gap-8">
+            {links.map((link) => (
+              <a
+                key={link.label}
+                href={link.href}
+                className="font-mono text-sm font-medium text-[var(--color-ink-dim)] hover:text-[var(--color-ink)] transition-colors duration-200"
+              >
+                {link.label}
+              </a>
+            ))}
           </div>
 
-          <button
-            type="button"
-            className="card-nav-cta-button hidden md:inline-flex border-0 rounded-[calc(0.75rem-0.2rem)] px-4 items-center h-full font-medium cursor-pointer transition-colors duration-300"
-            style={{ backgroundColor: buttonBgColor, color: buttonTextColor }}
-          >
-            Get Started
-          </button>
-        </div>
-
-        <div
-          className={`card-nav-content absolute left-0 right-0 top-[60px] bottom-0 p-2 flex flex-col items-stretch gap-2 justify-start z-[1] ${
-            isExpanded ? 'visible pointer-events-auto' : 'invisible pointer-events-none'
-          } md:flex-row md:items-end md:gap-[12px]`}
-          aria-hidden={!isExpanded}
-        >
-          {(items || []).slice(0, 3).map((item, idx) => (
-            <div
-              key={`${item.label}-${idx}`}
-              className="nav-card select-none relative flex flex-col gap-2 p-[12px_16px] rounded-[calc(0.75rem-0.2rem)] min-w-0 flex-[1_1_auto] h-auto min-h-[60px] md:h-full md:min-h-0 md:flex-[1_1_0%]"
-              ref={setCardRef(idx)}
-              style={{ backgroundColor: item.bgColor, color: item.textColor }}
+          {/* Desktop Actions */}
+          <div className="hidden md:flex items-center gap-4">
+            {/* Theme Switcher Button */}
+            <button
+              onClick={toggleTheme}
+              className="p-2 rounded-lg text-[var(--color-ink)] hover:bg-[var(--color-glass-strong)] transition-all duration-200 cursor-pointer"
+              aria-label={`Switch to ${isDarkBg ? 'light' : 'dark'} mode`}
             >
-              <div className="nav-card-label font-normal tracking-[-0.5px] text-[18px] md:text-[22px]">
-                {item.label}
-              </div>
-              <div className="nav-card-links mt-auto flex flex-col gap-[2px]">
-                {item.links?.map((lnk, i) => (
-                  <a
-                    key={`${lnk.label}-${i}`}
-                    className="nav-card-link inline-flex items-center gap-[6px] no-underline cursor-pointer transition-opacity duration-300 hover:opacity-75 text-[15px] md:text-[16px]"
-                    href={lnk.href}
-                    aria-label={lnk.ariaLabel}
-                    style={{ color: 'inherit' }}
-                  >
-                    <ArrowUpRight className="nav-card-link-icon shrink-0" size={16} aria-hidden="true" />
-                    {lnk.label}
-                  </a>
-                ))}
-              </div>
-            </div>
-          ))}
+              {isDarkBg ? <Sun size={18} /> : <Moon size={18} />}
+            </button>
+
+            {/* Get Started Button */}
+            <a
+              href="#cta"
+              className="px-4 py-2 border-2 border-[var(--color-ink)] bg-[#34C759] text-white font-mono text-xs font-bold uppercase tracking-wider rounded-lg shadow-[2px_2px_0_0_var(--color-ink)] hover:-translate-x-[1px] hover:-translate-y-[1px] hover:shadow-[3px_3px_0_0_var(--color-ink)] active:translate-x-[0px] active:translate-y-[0px] active:shadow-[2px_2px_0_0_var(--color-ink)] transition-all duration-150 select-none text-center"
+            >
+              Get Started
+            </a>
+          </div>
+
+          {/* Mobile Hamburger Toggle */}
+          <div className="flex md:hidden items-center">
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              className="p-2 rounded-lg text-[var(--color-ink)] hover:bg-[var(--color-glass-strong)] transition-colors cursor-pointer"
+              aria-label={isOpen ? 'Close menu' : 'Open menu'}
+            >
+              {isOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
+          </div>
         </div>
+
+        {/* Mobile Dropdown Menu (only theme toggle & get started) */}
+        {isOpen && (
+          <div className="mt-4 pt-4 border-t border-[var(--color-line)] flex flex-col gap-4 md:hidden">
+            {/* Theme Switcher Toggle Row */}
+            <button
+              onClick={toggleTheme}
+              className="w-full flex items-center justify-between px-4 py-3 rounded-lg border border-[var(--color-line)] bg-[var(--color-glass)] text-[var(--color-ink)] font-mono text-sm font-semibold uppercase tracking-wider cursor-pointer hover:bg-[var(--color-glass-strong)] transition-all duration-200"
+            >
+              <span>{isDarkBg ? 'Light Mode' : 'Dark Mode'}</span>
+              {isDarkBg ? <Sun size={18} /> : <Moon size={18} />}
+            </button>
+
+            {/* Get Started CTA */}
+            <a
+              href="#cta"
+              onClick={() => setIsOpen(false)}
+              className="w-full py-3 border-2 border-[var(--color-ink)] bg-[#34C759] text-white font-mono text-sm font-bold uppercase tracking-wider rounded-xl shadow-[3px_3px_0_0_var(--color-ink)] hover:-translate-x-[1px] hover:-translate-y-[1px] hover:shadow-[4px_4px_0_0_var(--color-ink)] active:translate-x-[0px] active:translate-y-[0px] active:shadow-[3px_3px_0_0_var(--color-ink)] transition-all duration-150 select-none text-center"
+            >
+              Get Started
+            </a>
+          </div>
+        )}
       </nav>
     </div>
   );

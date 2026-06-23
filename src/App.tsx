@@ -1,8 +1,6 @@
 import { useState } from 'react';
-import { Sun, Moon } from 'lucide-react';
 import PixelBlast from './components/PixelBlast';
 import CardNav from './components/CardNav';
-import type { CardNavItem } from './components/CardNav';
 import genesisImg from './assets/TheGenesis.png';
 import './App.css';
 
@@ -17,39 +15,6 @@ import PartnersSection from './components/PartnersSection';
 import FaqSection from './components/FaqSection';
 import CtaSection from './components/CtaSection';
 import Footer from './components/Footer';
-
-const navItems: CardNavItem[] = [
-  {
-    label: 'Syllabus',
-    bgColor: '#ffffff',
-    textColor: '#0f0c1b',
-    links: [
-      { label: 'Intro to Bitcoin', href: '#intro', ariaLabel: 'Learn Bitcoin basics' },
-      { label: 'Rust Development', href: '#rust', ariaLabel: 'Rust and protocol coding' },
-      { label: 'Final Project', href: '#project', ariaLabel: 'Review final project requirements' }
-    ]
-  },
-  {
-    label: 'Resources',
-    bgColor: '#ffd984',
-    textColor: '#0f0c1b',
-    links: [
-      { label: 'GitHub Repository', href: '#github', ariaLabel: 'Visit GitHub' },
-      { label: 'Setup Guide', href: '#setup', ariaLabel: 'Environment configuration guide' },
-      { label: 'FOSS Guidelines', href: '#guidelines', ariaLabel: 'Free and open source guidelines' }
-    ]
-  },
-  {
-    label: 'OSGuild',
-    bgColor: '#96dbb7',
-    textColor: '#0f0c1b',
-    links: [
-      { label: 'About Us', href: '#about', ariaLabel: 'More about OSGuild' },
-      { label: 'Mentorship', href: '#mentorship', ariaLabel: 'Apply for mentorship' },
-      { label: 'Contributions', href: '#contributions', ariaLabel: 'Submit contributions' }
-    ]
-  }
-];
 
 function App() {
   const [isDarkBg, setIsDarkBg] = useState<boolean>(() => {
@@ -72,16 +37,7 @@ function App() {
   return (
     <div className={`app-container ${isDarkBg ? 'dark-bg' : ''}`}>
       {/* Interactive CardNav */}
-      <CardNav logo="GENESIS" items={navItems} />
-
-      {/* Theme Switcher Button */}
-      <button 
-        onClick={toggleTheme} 
-        className="theme-toggle-btn" 
-        aria-label={`Switch to ${isDarkBg ? 'light' : 'dark'} mode`}
-      >
-        {isDarkBg ? <Sun size={18} /> : <Moon size={18} />}
-      </button>
+      <CardNav logo="GENESIS" isDarkBg={isDarkBg} toggleTheme={toggleTheme} />
 
       {/* Header featuring PixelBlast */}
       <header className="hero-header">
