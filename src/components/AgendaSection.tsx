@@ -10,7 +10,7 @@ const AgendaSection: React.FC = () => {
 
   return (
     <section id="agenda" className="py-16 md:py-24 max-w-[800px] mx-auto px-4 md:px-8 text-left">
-      <SectionHeading eyebrow="agenda" title="Roadmap" intro="A look at our scheduled sessions and tracks." />
+      <SectionHeading eyebrow="agenda" title="Workshop Agenda" intro="A look at our scheduled sessions and tracks." />
 
       {/* Tab Switcher */}
       <div className="flex justify-center gap-4 mb-16 font-mono text-sm">

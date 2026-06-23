@@ -1,48 +1,56 @@
 import React from 'react';
 import SectionHeading from './ui/SectionHeading';
-import BrutalCard from './ui/BrutalCard';
-import { eventDetails } from '../data/eventDetails';
-import { MapPin, Calendar, Clock, Users, Handshake } from 'lucide-react';
+import Button from './ui/Button';
+import { MapPin, ExternalLink } from 'lucide-react';
 
 const EventDetailsSection: React.FC = () => {
-  const getIcon = (iconName: string) => {
-    const classes = "w-6 h-6 text-[var(--color-orange)]";
-    switch (iconName) {
-      case 'map-pin':
-        return <MapPin className={classes} aria-hidden="true" />;
-      case 'calendar':
-        return <Calendar className={classes} aria-hidden="true" />;
-      case 'clock':
-        return <Clock className={classes} aria-hidden="true" />;
-      case 'users':
-        return <Users className={classes} aria-hidden="true" />;
-      case 'handshake':
-        return <Handshake className={classes} aria-hidden="true" />;
-      default:
-        return null;
-    }
-  };
+  const mapsUrl = "https://maps.app.goo.gl/QH9MHyeDQ5QMx8Rs5?g_st=ic";
 
   return (
     <section id="details" className="py-16 md:py-24 max-w-[1180px] mx-auto px-4 md:px-8">
-      <SectionHeading eyebrow="event details" title="Event Details" />
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
-        {eventDetails.map((detail) => {
-          const isTBA = detail.value === 'TBA';
-          return (
-            <BrutalCard key={detail.id} className="flex flex-col justify-between p-6 min-h-[160px] text-left">
-              <div className="flex items-center justify-between mb-4">
-                <span className="font-mono text-xs text-[var(--color-ink-dim)] uppercase tracking-wider">
-                  {detail.label}
-                </span>
-                {getIcon(detail.icon)}
-              </div>
-              <div className={`text-xl md:text-2xl font-bold font-heading tracking-tight ${isTBA ? 'opacity-50 text-[var(--color-ink-dim)]' : 'text-[var(--color-ink)]'}`}>
-                {detail.value}
-              </div>
-            </BrutalCard>
-          );
-        })}
+      <SectionHeading eyebrow="venue & directions" title="Event Venue" align="left" />
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-stretch mt-8">
+        {/* Left Side: Venue Details */}
+        <div className="flex flex-col justify-center items-start text-left">
+          <div className="flex items-center gap-3 mb-4 text-[var(--color-orange)]">
+            <MapPin className="w-8 h-8" aria-hidden="true" />
+            <span className="font-mono text-xs uppercase tracking-wider text-[var(--color-ink-dim)]">
+              Location
+            </span>
+          </div>
+          
+          <h3 className="text-3xl font-bold tracking-tight text-[var(--color-ink)] font-heading mb-4">
+            Workshop17 Telfair
+          </h3>
+          
+          <p className="text-lg text-[var(--color-ink-dim)] leading-relaxed mb-8">
+            Telfair, Moka, Mauritius
+          </p>
+
+          <Button 
+            as="a" 
+            href={mapsUrl} 
+            variant="primary"
+            className="flex items-center gap-2"
+          >
+            Get Directions <ExternalLink size={16} />
+          </Button>
+        </div>
+
+        {/* Right Side: Embedded Map */}
+        <div className="h-[300px] md:h-[400px] w-full rounded-lg overflow-hidden border border-[var(--color-line)] shadow-sm bg-[var(--color-bg-soft)]">
+          <iframe
+            title="Workshop17 Telfair Location Map"
+            src="https://maps.google.com/maps?q=Workshop17%20Telfair,%20Moka,%20Mauritius&t=&z=15&ie=UTF8&iwloc=&output=embed"
+            width="100%"
+            height="100%"
+            style={{ border: 0 }}
+            allowFullScreen={false}
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+          />
+        </div>
       </div>
     </section>
   );

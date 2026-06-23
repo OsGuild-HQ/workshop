@@ -9,11 +9,10 @@ import './App.css';
 // Section components
 import AboutSection from './components/AboutSection';
 import WhySection from './components/WhySection';
-import TopicsSection from './components/TopicsSection';
+import CareerPathway from './components/CareerPathway';
 import AgendaSection from './components/AgendaSection';
 import SpeakersSection from './components/SpeakersSection';
 import EventDetailsSection from './components/EventDetailsSection';
-import AttendeesSection from './components/AttendeesSection';
 import PartnersSection from './components/PartnersSection';
 import FaqSection from './components/FaqSection';
 import CtaSection from './components/CtaSection';
@@ -113,7 +112,7 @@ function App() {
           <div className="header-content-wrapper">
             <div className="header-text-side">
               <span className="subtitle-tag">Mauritius 🇲🇺 - 25th July 2026</span>
-              <h1 className="main-title">THE GENESIS WORKSHOP</h1>
+              <h1 className="main-title">BUILDING OPEN SOURCE DEVELOPERS</h1>
               <p className="description">
                 An in-person Workshop designed to help developers step confidently into the world of open source
               </p>
@@ -129,11 +128,10 @@ function App() {
       <main className="w-full flex-grow">
         <AboutSection />
         <WhySection />
-        <TopicsSection />
-        <AgendaSection />
+        <CareerPathway />
         <SpeakersSection />
+        <AgendaSection />
         <EventDetailsSection />
-        <AttendeesSection />
         <PartnersSection />
         <FaqSection />
         <CtaSection />
