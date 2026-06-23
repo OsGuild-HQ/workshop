@@ -15,6 +15,7 @@ import PartnersSection from './components/PartnersSection';
 import FaqSection from './components/FaqSection';
 import CtaSection from './components/CtaSection';
 import Footer from './components/Footer';
+import BackToTop from './components/BackToTop';
 
 function App() {
   const [isDarkBg, setIsDarkBg] = useState<boolean>(() => {
@@ -93,6 +94,7 @@ function App() {
         <CtaSection />
       </main>
       <Footer />
+      <BackToTop />
     </div>
   );
 }
