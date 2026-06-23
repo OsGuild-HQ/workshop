@@ -82,6 +82,19 @@
   z-index: 1;
 }
 
+.pixel-blast-wrapper canvas {
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.05) 30%, rgba(0, 0, 0, 0.8) 70%, black 100%);
+  mask-image: linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.05) 30%, rgba(0, 0, 0, 0.8) 70%, black 100%);
+}
+
+@media (max-width: 768px) {
+  .pixel-blast-wrapper canvas {
+    -webkit-mask-image: linear-gradient(to bottom, black 0%, rgba(0, 0, 0, 0.8) 40%, rgba(0, 0, 0, 0.05) 75%, transparent 100%);
+    mask-image: linear-gradient(to bottom, black 0%, rgba(0, 0, 0, 0.8) 40%, rgba(0, 0, 0, 0.05) 75%, transparent 100%);
+  }
+}
+
+
 .header-overlay {
   position: absolute;
   top: 0;
@@ -269,6 +282,18 @@
   }
 }
 
+.glass-card.no-shadow {
+  box-shadow: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .glass-card-hover.no-shadow:hover {
+    transform: none;
+    box-shadow: none;
+  }
+}
+
+
 .brutal-card {
   background-color: rgba(255, 255, 255, 0.85);
   backdrop-filter: blur(14px);
@@ -292,3 +317,42 @@
     background-color: rgba(28, 30, 36, 0.85);
   }
 }
+
+/* Btrust Logo theme switching */
+.app-container .btrust-logo-white {
+  display: none;
+}
+.app-container .btrust-logo-black {
+  display: block;
+}
+.app-container.dark-bg .btrust-logo-white {
+  display: block;
+}
+.app-container.dark-bg .btrust-logo-black {
+  display: none;
+}
+
+.app-container .supported-by-text {
+  color: #000000;
+}
+.app-container.dark-bg .supported-by-text {
+  color: #ffffff;
+}
+
+/* Clear black and white text in the hero header section */
+.app-container .hero-header .subtitle-tag,
+.app-container .hero-header .main-title,
+.app-container .hero-header .description {
+  color: #000000;
+  opacity: 1;
+}
+
+.app-container.dark-bg .hero-header .subtitle-tag,
+.app-container.dark-bg .hero-header .main-title,
+.app-container.dark-bg .hero-header .description {
+  color: #ffffff;
+  opacity: 1;
+}
+
+
+

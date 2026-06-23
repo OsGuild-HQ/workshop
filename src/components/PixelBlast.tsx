@@ -1,6 +1,8 @@
 import { Effect, EffectComposer, EffectPass, RenderPass } from 'postprocessing';
 import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
+import btrustBlack from '../assets/Btrust-black.png';
+import btrustWhite from '../assets/Btrust-white.png';
 
 type PixelBlastVariant = 'square' | 'circle' | 'triangle' | 'diamond';
 
@@ -693,7 +695,23 @@ const PixelBlast: React.FC<PixelBlastProps> = ({
       className={`w-full h-full relative overflow-hidden ${className ?? ''}`}
       style={style}
       aria-label="PixelBlast interactive background"
-    />
+    >
+      <div className="absolute bottom-8 left-0 right-0 flex flex-col items-center gap-3 z-10 select-none pointer-events-auto">
+        <span className="supported-by-text text-xs md:text-sm tracking-[0.25em] uppercase font-mono font-semibold">
+          Supported by
+        </span>
+        <img
+          src={btrustBlack}
+          className="btrust-logo-black h-12 md:h-14 w-auto object-contain"
+          alt="Btrust Logo"
+        />
+        <img
+          src={btrustWhite}
+          className="btrust-logo-white h-12 md:h-14 w-auto object-contain"
+          alt="Btrust Logo"
+        />
+      </div>
+    </div>
   );
 };
 

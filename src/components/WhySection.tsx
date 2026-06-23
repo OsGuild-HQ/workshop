@@ -23,7 +23,7 @@ const WhySection: React.FC = () => {
       <SectionHeading eyebrow="why genesis" title="Why We Built Genesis" />
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {whyCards.map((card) => (
-          <SpotlightCard key={card.id} className="flex flex-col items-start text-left h-full">
+          <SpotlightCard key={card.id} className="flex flex-col items-start text-left h-full no-shadow">
             <div className="mb-4">
               {getIcon(card.icon)}
             </div>
