@@ -354,5 +354,19 @@
   opacity: 1;
 }
 
+/* Partner Logo theme switching */
+.app-container .partner-logo-dark {
+  display: none;
+}
+.app-container .partner-logo-light {
+  display: block;
+}
+.app-container.dark-bg .partner-logo-dark {
+  display: block;
+}
+.app-container.dark-bg .partner-logo-light {
+  display: none;
+}
+
 
 
