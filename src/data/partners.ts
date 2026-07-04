@@ -10,10 +10,31 @@ export interface Partner {
   logo: string | null;
   logoDark?: string | null;
   placeholder: boolean;
+  website?: string;
 }
 
 export const partners: Partner[] = [
-  { id: "osguild", name: "OSGuild", logo: osguildLogo, logoDark: osguildWhiteLogo, placeholder: false },
-  { id: "bitdevs-mu", name: "BitDevs Mauritius", logo: bitdevsLogo, logoDark: bitdevsWhiteLogo, placeholder: false },
-  { id: "gdg", name: "GDG", logo: gdgLogo, placeholder: false },
+  { 
+    id: "osguild", 
+    name: "OSGuild", 
+    logo: osguildLogo, 
+    logoDark: osguildWhiteLogo, 
+    placeholder: false,
+    website: "https://osguild.dev"
+  },
+  { 
+    id: "bitdevs-mu", 
+    name: "BitDevs Mauritius", 
+    logo: bitdevsLogo, 
+    logoDark: bitdevsWhiteLogo, 
+    placeholder: false,
+    website: "https://www.bitdevsmauritius.org/"
+  },
+  { 
+    id: "gdg", 
+    name: "GDG", 
+    logo: gdgLogo, 
+    placeholder: false,
+    website: "https://gdg.community.dev/gdg-on-campus-university-of-mauritius-reduit-mauritius/"
+  },
 ];

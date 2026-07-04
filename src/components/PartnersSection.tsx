@@ -55,7 +55,8 @@ const PartnersSection: React.FC = () => {
         <div className="flex items-center justify-center select-none min-w-[150px] md:min-w-[200px] h-[90px]">
           {content}
         </div>
-      )
+      ),
+      href: partner.website
     };
   });
 
