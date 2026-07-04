@@ -1,4 +1,5 @@
 import sadiqImage from '../assets/speakers/Sadiq.jpg';
+import simonImage from '../assets/speakers/simon.jpeg';
 
 export interface Speaker {
   id: string;
@@ -20,5 +21,12 @@ export const speakers: Speaker[] = [
     organization: "Bitdevs Mauritius & OSGuild Founder",
     image: sadiqImage,
     github: "https://github.com/sadeeqrabiu"
+  },
+  {
+    id: "simon",
+    name: "Simon",
+    organization: "Bitcoin educator/opensource contributor and coofounder BitDevs Nairobi",
+    image: simonImage,
+    github: "https://github.com/xyephy"
   }
 ];
