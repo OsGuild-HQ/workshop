@@ -6,6 +6,7 @@ interface ButtonProps {
   variant?: 'primary' | 'ghost';
   onClick?: (e: React.MouseEvent) => void;
   className?: string;
+  disabled?: boolean;
   children: React.ReactNode;
 }
 
@@ -15,6 +16,7 @@ const Button: React.FC<ButtonProps> = ({
   variant = 'primary',
   onClick,
   className = '',
+  disabled = false,
   children
 }) => {
   const baseClasses =
@@ -27,14 +29,14 @@ const Button: React.FC<ButtonProps> = ({
 
   if (Component === 'a') {
     return (
-      <a href={href} onClick={onClick} className={`${baseClasses} ${variantClasses} ${className}`}>
+      <a href={href} onClick={onClick} className={`${baseClasses} ${variantClasses} ${disabled ? 'opacity-40 cursor-not-allowed pointer-events-none' : ''} ${className}`}>
         {children}
       </a>
     );
   }
 
   return (
-    <button onClick={onClick} className={`${baseClasses} ${variantClasses} ${className}`}>
+    <button disabled={disabled} onClick={onClick} className={`${baseClasses} ${variantClasses} ${disabled ? 'opacity-40 cursor-not-allowed pointer-events-none' : ''} ${className}`}>
       {children}
     </button>
   );

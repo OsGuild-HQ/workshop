@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import PixelBlast from './components/PixelBlast';
 import CardNav from './components/CardNav';
 import genesisImg from './assets/TheGenesis.png';
@@ -14,10 +14,12 @@ import EventDetailsSection from './components/EventDetailsSection';
 import PartnersSection from './components/PartnersSection';
 import FaqSection from './components/FaqSection';
 import CtaSection from './components/CtaSection';
+import RegistrationSection from './components/RegistrationSection';
 import Footer from './components/Footer';
 import BackToTop from './components/BackToTop';
 
 function App() {
+  const [currentPage, setCurrentPage] = useState<'home' | 'register'>('home');
   const [isDarkBg, setIsDarkBg] = useState<boolean>(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('workshop-bg');
@@ -29,11 +31,33 @@ function App() {
     return false;
   });
 
+  useEffect(() => {
+    const handleHashChange = () => {
+      if (window.location.hash === '#register') {
+        setCurrentPage('register');
+        window.scrollTo(0, 0);
+      } else {
+        setCurrentPage('home');
+      }
+    };
+    window.addEventListener('hashchange', handleHashChange);
+    handleHashChange();
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
+
   const toggleTheme = () => {
     const nextVal = !isDarkBg;
     setIsDarkBg(nextVal);
     localStorage.setItem('workshop-bg', nextVal ? 'dark' : 'light');
   };
+
+  if (currentPage === 'register') {
+    return (
+      <div className={`app-container ${isDarkBg ? 'dark-bg' : ''}`}>
+        <RegistrationSection />
+      </div>
+    );
+  }
 
   return (
     <div className={`app-container ${isDarkBg ? 'dark-bg' : ''}`}>
