@@ -25,7 +25,7 @@ const Button: React.FC<ButtonProps> = ({
   const variantClasses =
     variant === 'primary'
       ? 'bg-[var(--color-orange)] text-[var(--bg)] border-[var(--color-ink)] shadow-[4px_4px_0_0_var(--color-ink)] hover:-translate-x-[2px] hover:-translate-y-[2px] hover:shadow-[6px_6px_0_0_var(--color-ink)] active:translate-x-[0px] active:translate-y-[0px] active:shadow-[4px_4px_0_0_var(--color-ink)]'
-      : 'bg-transparent text-[var(--color-ink)] border-[var(--color-ink)] hover:bg-[var(--color-glass-strong)] hover:shadow-[0_2px_12px_rgba(247,147,26,0.15)]';
+      : 'bg-transparent text-[var(--color-ink)] border-transparent hover:bg-[var(--color-glass-strong)] hover:shadow-[0_2px_12px_rgba(247,147,26,0.15)]';
 
   if (Component === 'a') {
     return (

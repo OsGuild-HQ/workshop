@@ -49,9 +49,17 @@ const CardNav: React.FC<CardNavProps> = ({
         <div className="flex items-center justify-between">
           {/* Logo */}
           <div className="logo-container flex items-center">
-            <span className="logo-text font-bold tracking-tight text-xl text-[var(--color-ink)] font-heading select-none">
-              {logo}
+            {/* Desktop View: Logo text renamed to WORKSHOP */}
+            <span className="logo-text hidden md:inline font-bold tracking-tight text-xl text-[var(--color-ink)] font-heading select-none">
+              WORKSHOP
             </span>
+            {/* Mobile View: Replace logo text with 'Register' button */}
+            <a
+              href="#register"
+              className="md:hidden px-3 py-1.5 border-2 border-[var(--color-ink)] bg-[#34C759] text-white font-mono text-xs font-bold uppercase tracking-wider rounded-lg shadow-[2px_2px_0_0_var(--color-ink)] hover:-translate-x-[1px] hover:-translate-y-[1px] hover:shadow-[3px_3px_0_0_var(--color-ink)] active:translate-x-[0px] active:translate-y-[0px] active:shadow-[2px_2px_0_0_var(--color-ink)] transition-all duration-150 select-none text-center"
+            >
+              Register
+            </a>
           </div>
 
           {/* Desktop Navigation Links */}
@@ -79,13 +87,12 @@ const CardNav: React.FC<CardNavProps> = ({
               {isDarkBg ? <Sun size={18} /> : <Moon size={18} />}
             </button>
 
-            {/* Get Started Button */}
+            {/* Register Button */}
             <a
-              href="#cta"
-              onClick={(e) => handleScroll(e, '#cta')}
+              href="#register"
               className="px-4 py-2 border-2 border-[var(--color-ink)] bg-[#34C759] text-white font-mono text-xs font-bold uppercase tracking-wider rounded-lg shadow-[2px_2px_0_0_var(--color-ink)] hover:-translate-x-[1px] hover:-translate-y-[1px] hover:shadow-[3px_3px_0_0_var(--color-ink)] active:translate-x-[0px] active:translate-y-[0px] active:shadow-[2px_2px_0_0_var(--color-ink)] transition-all duration-150 select-none text-center"
             >
-              Get Started
+              Register
             </a>
           </div>
 
@@ -113,13 +120,13 @@ const CardNav: React.FC<CardNavProps> = ({
               {isDarkBg ? <Sun size={18} /> : <Moon size={18} />}
             </button>
 
-            {/* Get Started CTA */}
+            {/* Register CTA */}
             <a
-              href="#cta"
-              onClick={(e) => handleScroll(e, '#cta')}
+              href="#register"
+              onClick={() => setIsOpen(false)}
               className="w-full py-3 border-2 border-[var(--color-ink)] bg-[#34C759] text-white font-mono text-sm font-bold uppercase tracking-wider rounded-xl shadow-[3px_3px_0_0_var(--color-ink)] hover:-translate-x-[1px] hover:-translate-y-[1px] hover:shadow-[4px_4px_0_0_var(--color-ink)] active:translate-x-[0px] active:translate-y-[0px] active:shadow-[3px_3px_0_0_var(--color-ink)] transition-all duration-150 select-none text-center"
             >
-              Get Started
+              Register
             </a>
           </div>
         )}

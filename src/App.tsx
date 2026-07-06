@@ -54,7 +54,7 @@ function App() {
   if (currentPage === 'register') {
     return (
       <div className={`app-container ${isDarkBg ? 'dark-bg' : ''}`}>
-        <RegistrationSection />
+        <RegistrationSection isDarkBg={isDarkBg} toggleTheme={toggleTheme} />
       </div>
     );
   }
