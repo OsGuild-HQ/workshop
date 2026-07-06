@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { gsap } from 'gsap';
 import { ArrowLeft, Sun, Moon } from 'lucide-react';
 import Button from './ui/Button';
@@ -51,6 +51,7 @@ const RegistrationSection: React.FC<RegistrationSectionProps> = ({
   const [submitting, setSubmitting] = useState(false);
   const confettiRef = useRef<HTMLDivElement>(null);
   const [downloading, setDownloading] = useState(false);
+  const [currentTicketId, setCurrentTicketId] = useState('');
 
   const downloadPDFTicket = async () => {
     if (downloading) return;
@@ -167,7 +168,7 @@ const RegistrationSection: React.FC<RegistrationSectionProps> = ({
         loadImage(isDarkBg ? bitdevsLogoWhite : bitdevsLogoBlack),
         loadImage(osguildLogo),
         loadImage(
-          `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(`Genesis Ticket: ${values.name} - SPARTAN - ${values.email}`)}&color=${isDarkBg ? 'ffffff' : '000000'}&bgcolor=${isDarkBg ? '000000' : 'ffffff'}`,
+          `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(`${window.location.origin}/#ticket?id=${currentTicketId}`)}&color=${isDarkBg ? 'ffffff' : '000000'}&bgcolor=${isDarkBg ? '000000' : 'ffffff'}`,
           'anonymous'
         )
       ]);
@@ -262,6 +263,28 @@ const RegistrationSection: React.FC<RegistrationSectionProps> = ({
       
       // Mock network latency
       setTimeout(() => {
+        const ticketId = 'GW-' + Math.random().toString(36).substring(2, 9).toUpperCase();
+        
+        // Save to localStorage list
+        const newRegistration = {
+          id: ticketId,
+          name: values.name,
+          email: values.email,
+          phone: values.phone,
+          gender: values.gender,
+          affiliation: values.affiliation,
+          institution: values.affiliation === 'Student' ? values.institution : '',
+          busPickup: values.busPickup,
+          blockQuest: values.blockQuest,
+          timestamp: new Date().toISOString()
+        };
+
+        const existing = localStorage.getItem('genesis-registrations');
+        const list = existing ? JSON.parse(existing) : [];
+        list.push(newRegistration);
+        localStorage.setItem('genesis-registrations', JSON.stringify(list));
+
+        setCurrentTicketId(ticketId);
         setSubmitting(false);
         setStep(10);
         
@@ -390,7 +413,7 @@ const RegistrationSection: React.FC<RegistrationSectionProps> = ({
             {/* QR Code */}
             <div className="flex justify-center my-2">
               <img 
-                src={`https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(`Genesis Ticket: ${values.name} - SPARTAN - ${values.email}`)}&color=${isDarkBg ? 'ffffff' : '000000'}&bgcolor=${isDarkBg ? '000000' : 'ffffff'}`}
+                src={`https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(`${window.location.origin}/#ticket?id=${currentTicketId}`)}&color=${isDarkBg ? 'ffffff' : '000000'}&bgcolor=${isDarkBg ? '000000' : 'ffffff'}`}
                 alt="Ticket QR Code"
                 className="w-[180px] h-[180px] md:w-[220px] md:h-[220px] border border-[var(--color-line)] p-2 bg-white dark:bg-black rounded-lg"
               />
@@ -796,7 +819,7 @@ const RegistrationSection: React.FC<RegistrationSectionProps> = ({
                   <Button 
                     variant="primary" 
                     onClick={(e) => { e.preventDefault(); downloadPDFTicket(); }}
-                    disabled={!badgeImage}
+                    disabled={downloading}
                   >
                     Download PDF Ticket
                   </Button>
@@ -816,7 +839,6 @@ const RegistrationSection: React.FC<RegistrationSectionProps> = ({
                         busPickup: '',
                         blockQuest: ''
                       });
-                      setBadgeImage(null);
                     }}
                   >
                     Submit Another

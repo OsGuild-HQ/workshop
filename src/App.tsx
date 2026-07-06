@@ -15,11 +15,28 @@ import PartnersSection from './components/PartnersSection';
 import FaqSection from './components/FaqSection';
 import CtaSection from './components/CtaSection';
 import RegistrationSection from './components/RegistrationSection';
+import TicketVerificationSection from './components/TicketVerificationSection';
 import Footer from './components/Footer';
 import BackToTop from './components/BackToTop';
 
+const getRouteAndParams = () => {
+  if (typeof window === 'undefined') return { route: 'home', params: {} as Record<string, string> };
+  const hash = window.location.hash;
+  if (!hash) return { route: 'home', params: {} as Record<string, string> };
+  
+  const [cleanHash, queryString] = hash.split('?');
+  const params: Record<string, string> = {};
+  if (queryString) {
+    const searchParams = new URLSearchParams(queryString);
+    searchParams.forEach((value, key) => {
+      params[key] = value;
+    });
+  }
+  return { route: cleanHash.substring(1), params };
+};
+
 function App() {
-  const [currentPage, setCurrentPage] = useState<'home' | 'register'>('home');
+  const [routeInfo, setRouteInfo] = useState(() => getRouteAndParams());
   const [isDarkBg, setIsDarkBg] = useState<boolean>(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('workshop-bg');
@@ -33,11 +50,10 @@ function App() {
 
   useEffect(() => {
     const handleHashChange = () => {
-      if (window.location.hash === '#register') {
-        setCurrentPage('register');
+      const info = getRouteAndParams();
+      setRouteInfo(info);
+      if (info.route === 'register' || info.route === 'ticket') {
         window.scrollTo(0, 0);
-      } else {
-        setCurrentPage('home');
       }
     };
     window.addEventListener('hashchange', handleHashChange);
@@ -51,7 +67,15 @@ function App() {
     localStorage.setItem('workshop-bg', nextVal ? 'dark' : 'light');
   };
 
-  if (currentPage === 'register') {
+  if (routeInfo.route === 'ticket') {
+    return (
+      <div className={`app-container ${isDarkBg ? 'dark-bg' : ''}`}>
+        <TicketVerificationSection ticketId={routeInfo.params.id || ''} isDarkBg={isDarkBg} />
+      </div>
+    );
+  }
+
+  if (routeInfo.route === 'register') {
     return (
       <div className={`app-container ${isDarkBg ? 'dark-bg' : ''}`}>
         <RegistrationSection isDarkBg={isDarkBg} toggleTheme={toggleTheme} />

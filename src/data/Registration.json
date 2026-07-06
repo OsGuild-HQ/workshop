@@ -1,0 +1,26 @@
+[
+  {
+    "id": "GW-SPARTAN1",
+    "name": "Alice Vance",
+    "email": "alice@osguild.org",
+    "phone": "+230 5123 4567",
+    "gender": "Female",
+    "affiliation": "Professional",
+    "institution": "",
+    "busPickup": "No",
+    "blockQuest": "Yes",
+    "timestamp": "2026-07-05T12:00:00.000Z"
+  },
+  {
+    "id": "GW-SPARTAN2",
+    "name": "Bob Miller",
+    "email": "bob@bitdevs.org",
+    "phone": "+230 5765 4321",
+    "gender": "Male",
+    "affiliation": "Student",
+    "institution": "University of Mauritius",
+    "busPickup": "Yes",
+    "blockQuest": "No",
+    "timestamp": "2026-07-05T14:30:00.000Z"
+  }
+]

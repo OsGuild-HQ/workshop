@@ -9,7 +9,7 @@ export interface CardNavProps {
 }
 
 const CardNav: React.FC<CardNavProps> = ({
-  logo,
+  logo: _logo,
   isDarkBg,
   toggleTheme,
   className = ''
