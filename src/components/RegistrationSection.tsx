@@ -29,29 +29,55 @@ const BUS_PICKUP_POINTS = [
   'ALCHE'
 ];
 
+interface RegistrationValues {
+  name: string;
+  email: string;
+  phone: string;
+  gender: string;
+  affiliation: string;
+  institution: string;
+  busPickup: string;
+  blockQuest: string;
+}
+
 const RegistrationSection: React.FC<RegistrationSectionProps> = ({ 
   id = 'register',
   isDarkBg = false,
   toggleTheme
 }) => {
-  const [step, setStep] = useState(0); 
+  const [step, setStep] = useState(() => {
+    const savedTicketId = localStorage.getItem('genesis-current-ticket-id');
+    return savedTicketId ? 10 : 0;
+  }); 
   // 0: Intro, 1: Name, 2: Email, 3: Phone, 4: Gender, 5: Affiliation, 6: Student Institution, 7: Bus Pickup, 8: Block Quest, 9: Confirm, 10: Success
   
-  const [values, setValues] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    gender: '',
-    affiliation: '',
-    institution: '',
-    busPickup: '',
-    blockQuest: ''
+  const [values, setValues] = useState<RegistrationValues>(() => {
+    const savedUser = localStorage.getItem('genesis-current-user');
+    if (savedUser) {
+      try {
+        return JSON.parse(savedUser);
+      } catch (e) {
+        // Fallback
+      }
+    }
+    return {
+      name: '',
+      email: '',
+      phone: '',
+      gender: '',
+      affiliation: '',
+      institution: '',
+      busPickup: '',
+      blockQuest: ''
+    };
   });
 
   const [submitting, setSubmitting] = useState(false);
   const confettiRef = useRef<HTMLDivElement>(null);
   const [downloading, setDownloading] = useState(false);
-  const [currentTicketId, setCurrentTicketId] = useState('');
+  const [currentTicketId, setCurrentTicketId] = useState(() => {
+    return localStorage.getItem('genesis-current-ticket-id') || '';
+  });
 
   const downloadPDFTicket = async () => {
     if (downloading) return;
@@ -283,6 +309,20 @@ const RegistrationSection: React.FC<RegistrationSectionProps> = ({
         const list = existing ? JSON.parse(existing) : [];
         list.push(newRegistration);
         localStorage.setItem('genesis-registrations', JSON.stringify(list));
+
+        localStorage.setItem('genesis-current-ticket-id', ticketId);
+        localStorage.setItem('genesis-current-user', JSON.stringify(newRegistration));
+
+        // Persist to local JSON file via dev-server API during local development
+        fetch('/api/register', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(newRegistration)
+        }).catch(err => {
+          console.warn('Dev server API not available. Saved locally in browser storage.', err);
+        });
 
         setCurrentTicketId(ticketId);
         setSubmitting(false);
