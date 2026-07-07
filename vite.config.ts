@@ -23,7 +23,7 @@ export default defineConfig({
             req.on('end', () => {
               try {
                 const newReg = JSON.parse(body);
-                const filePath = path.resolve(__dirname, 'src/data/Registration.json');
+                const filePath = path.resolve(__dirname, 'public/Registration.json');
                 
                 // Read current Registration.json
                 let currentList = [];

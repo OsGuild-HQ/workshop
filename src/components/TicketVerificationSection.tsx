@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { ArrowLeft, CheckCircle, AlertTriangle } from 'lucide-react';
 import Button from './ui/Button';
 
@@ -8,10 +8,72 @@ interface TicketVerificationSectionProps {
 }
 
 const TicketVerificationSection: React.FC<TicketVerificationSectionProps> = ({ ticketId, isDarkBg }) => {
-  // Load registration info from localStorage
-  const existing = localStorage.getItem('genesis-registrations');
-  const list = existing ? JSON.parse(existing) : [];
-  const ticket = list.find((item: any) => item.id === ticketId);
+  const [ticket, setTicket] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let active = true;
+
+    async function loadTicket() {
+      // 1. Try to fetch from /api/register
+      try {
+        const response = await fetch('/api/register');
+        if (response.ok) {
+          const list = await response.json();
+          const found = list.find((item: any) => item.id === ticketId);
+          if (found && active) {
+            setTicket(found);
+            setLoading(false);
+            return;
+          }
+        }
+      } catch (err) {
+        console.warn('Failed to fetch from /api/register, trying fallback...', err);
+      }
+
+      // 2. Try to fetch from /Registration.json
+      try {
+        const response = await fetch('/Registration.json');
+        if (response.ok) {
+          const list = await response.json();
+          const found = list.find((item: any) => item.id === ticketId);
+          if (found && active) {
+            setTicket(found);
+            setLoading(false);
+            return;
+          }
+        }
+      } catch (err) {
+        console.warn('Failed to fetch from /Registration.json, trying localStorage...', err);
+      }
+
+      // 3. Fallback to localStorage
+      if (active) {
+        const existing = localStorage.getItem('genesis-registrations');
+        const list = existing ? JSON.parse(existing) : [];
+        const found = list.find((item: any) => item.id === ticketId);
+        setTicket(found);
+        setLoading(false);
+      }
+    }
+
+    loadTicket();
+
+    return () => {
+      active = false;
+    };
+  }, [ticketId]);
+
+  if (loading) {
+    return (
+      <section className="py-20 md:py-28 max-w-[1180px] mx-auto px-4 md:px-8 relative overflow-hidden flex items-center justify-center min-h-[90vh]">
+        <div className="flex flex-col items-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[var(--color-orange)] mb-4"></div>
+          <span className="font-mono text-xs uppercase tracking-widest text-gray-500">Verifying Ticket...</span>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="py-20 md:py-28 max-w-[1180px] mx-auto px-4 md:px-8 relative overflow-hidden flex items-center justify-center min-h-[90vh]">
