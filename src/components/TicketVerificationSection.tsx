@@ -15,39 +15,22 @@ const TicketVerificationSection: React.FC<TicketVerificationSectionProps> = ({ t
     let active = true;
 
     async function loadTicket() {
-      // 1. Try to fetch from /api/register
+      // 1. Try to fetch specific ticket from /api/register?id=<ticketId>
       try {
-        const response = await fetch('/api/register');
+        const response = await fetch(`/api/register?id=${encodeURIComponent(ticketId)}`);
         if (response.ok) {
-          const list = await response.json();
-          const found = list.find((item: any) => item.id === ticketId);
-          if (found && active) {
-            setTicket(found);
+          const data = await response.json();
+          if (data && data.id && active) {
+            setTicket(data);
             setLoading(false);
             return;
           }
         }
       } catch (err) {
-        console.warn('Failed to fetch from /api/register, trying fallback...', err);
+        console.warn('Failed to fetch from /api/register, trying localStorage...', err);
       }
 
-      // 2. Try to fetch from /Registration.json
-      try {
-        const response = await fetch('/Registration.json');
-        if (response.ok) {
-          const list = await response.json();
-          const found = list.find((item: any) => item.id === ticketId);
-          if (found && active) {
-            setTicket(found);
-            setLoading(false);
-            return;
-          }
-        }
-      } catch (err) {
-        console.warn('Failed to fetch from /Registration.json, trying localStorage...', err);
-      }
-
-      // 3. Fallback to localStorage
+      // 2. Fallback to localStorage
       if (active) {
         const existing = localStorage.getItem('genesis-registrations');
         const list = existing ? JSON.parse(existing) : [];

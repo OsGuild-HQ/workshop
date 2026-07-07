@@ -34,5 +34,22 @@
     "busPickup": "Yes",
     "blockQuest": "Yes",
     "timestamp": "2026-07-06T02:08:28.803Z"
+  },
+  {
+    "id": "GW-TEST1",
+    "name": "Test User",
+    "email": "test@example.com"
+  },
+  {
+    "id": "GW-I2012YH",
+    "name": "John Doe",
+    "email": "john@example.com",
+    "phone": "+230 5123 4567",
+    "gender": "Male",
+    "affiliation": "Professional",
+    "institution": "",
+    "busPickup": "No",
+    "blockQuest": "Yes",
+    "timestamp": "2026-07-07T00:32:46.366Z"
   }
 ]
