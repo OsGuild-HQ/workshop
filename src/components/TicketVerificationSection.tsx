@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createClient } from '../utils/supabase/client';
 import { ArrowLeft, CheckCircle, AlertTriangle } from 'lucide-react';
 import Button from './ui/Button';
 
@@ -6,6 +7,8 @@ interface TicketVerificationSectionProps {
   ticketId: string;
   isDarkBg: boolean;
 }
+
+const supabase = createClient();
 
 const TicketVerificationSection: React.FC<TicketVerificationSectionProps> = ({ ticketId, isDarkBg }) => {
   const [ticket, setTicket] = useState<any>(null);
@@ -15,7 +18,41 @@ const TicketVerificationSection: React.FC<TicketVerificationSectionProps> = ({ t
     let active = true;
 
     async function loadTicket() {
-      // 1. Try to fetch specific ticket from /api/register?id=<ticketId>
+      // 1. Try to fetch specific ticket from Supabase (client-side)
+      try {
+        const ticketIdNum = parseInt(ticketId, 10);
+        if (!isNaN(ticketIdNum)) {
+          const { data, error: sbError } = await supabase
+            .from('Registration')
+            .select('*')
+            .eq('ticket_id', ticketIdNum)
+            .maybeSingle();
+
+          if (!sbError && data && active) {
+            const mappedData = {
+              id: data.ticket_id.toString(),
+              name: data.full_name,
+              email: data.email,
+              github: data.github || '',
+              phone: data.phone_number?.toString() || '',
+              gender: data.gender,
+              affiliation: data.Affiliation,
+              institution: data.Affiliation === 'Student' ? data.occupation : '',
+              busPickup: data.bus,
+              blockQuest: data.block_quest,
+              dietary: data.Refreshment || 'No preference',
+              timestamp: data.created_at
+            };
+            setTicket(mappedData);
+            setLoading(false);
+            return;
+          }
+        }
+      } catch (err) {
+        console.warn('Failed to fetch from Supabase, falling back...', err);
+      }
+
+      // 2. Try to fetch specific ticket from /api/register?id=<ticketId>
       try {
         const response = await fetch(`/api/register?id=${encodeURIComponent(ticketId)}`);
         if (response.ok) {
@@ -129,6 +166,10 @@ const TicketVerificationSection: React.FC<TicketVerificationSectionProps> = ({ t
               <div className="flex justify-between border-b border-[var(--color-line)] pb-2">
                 <span className="text-[var(--color-ink-dim)] uppercase">Block Quest:</span>
                 <span className="text-[var(--color-ink)]">{ticket.blockQuest}</span>
+              </div>
+              <div className="flex justify-between border-b border-[var(--color-line)] pb-2">
+                <span className="text-[var(--color-ink-dim)] uppercase">Dietary Pref:</span>
+                <span className="text-[var(--color-ink)]">{ticket.dietary}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-[var(--color-ink-dim)] uppercase">Registered On:</span>

@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import { createClient } from '../utils/supabase/client';
 import { gsap } from 'gsap';
 import { ArrowLeft, Sun, Moon } from 'lucide-react';
 import Button from './ui/Button';
@@ -14,6 +15,8 @@ interface RegistrationSectionProps {
   isDarkBg?: boolean;
   toggleTheme?: () => void;
 }
+
+const supabase = createClient();
 
 const INSTITUTIONS = [
   'University of Mauritius',
@@ -32,12 +35,14 @@ const BUS_PICKUP_POINTS = [
 interface RegistrationValues {
   name: string;
   email: string;
+  github: string;
   phone: string;
   gender: string;
   affiliation: string;
   institution: string;
   busPickup: string;
   blockQuest: string;
+  dietary: string;
 }
 
 const RegistrationSection: React.FC<RegistrationSectionProps> = ({ 
@@ -47,9 +52,9 @@ const RegistrationSection: React.FC<RegistrationSectionProps> = ({
 }) => {
   const [step, setStep] = useState(() => {
     const savedTicketId = localStorage.getItem('genesis-current-ticket-id');
-    return savedTicketId ? 10 : 0;
+    return savedTicketId ? 12 : 0;
   }); 
-  // 0: Intro, 1: Name, 2: Email, 3: Phone, 4: Gender, 5: Affiliation, 6: Student Institution, 7: Bus Pickup, 8: Block Quest, 9: Confirm, 10: Success
+  // 0: Intro, 1: Name, 2: Email, 3: GitHub, 4: Phone, 5: Gender, 6: Affiliation, 7: Student Institution, 8: Bus Pickup, 9: Block Quest, 10: Dietary, 11: Confirm, 12: Success
   
   const [values, setValues] = useState<RegistrationValues>(() => {
     const savedUser = localStorage.getItem('genesis-current-user');
@@ -63,12 +68,14 @@ const RegistrationSection: React.FC<RegistrationSectionProps> = ({
     return {
       name: '',
       email: '',
+      github: '',
       phone: '',
       gender: '',
       affiliation: '',
       institution: '',
       busPickup: '',
-      blockQuest: ''
+      blockQuest: '',
+      dietary: ''
     };
   });
 
@@ -243,33 +250,50 @@ const RegistrationSection: React.FC<RegistrationSectionProps> = ({
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   };
 
+  const validateMauritiusPhone = (phone: string) => {
+    const cleaned = phone.replace(/[\s\(\)\-\.]/g, '');
+    let localNumber = cleaned;
+    if (cleaned.startsWith('+230')) {
+      localNumber = cleaned.substring(4);
+    } else if (cleaned.startsWith('230') && cleaned.length > 8) {
+      localNumber = cleaned.substring(3);
+    } else if (cleaned.startsWith('00230')) {
+      localNumber = cleaned.substring(5);
+    }
+    const isMobile = /^5\d{7}$/.test(localNumber);
+    const isLandline = /^[24689]\d{6}$/.test(localNumber);
+    return isMobile || isLandline;
+  };
+
   const canProceed = () => {
     switch (step) {
       case 0: return true;
       case 1: return values.name.trim().length >= 2;
       case 2: return validateEmail(values.email);
-      case 3: return values.phone.trim().length >= 7;
-      case 4: return values.gender !== '';
-      case 5: return values.affiliation !== '';
-      case 6: return values.affiliation === 'Student' ? values.institution !== '' : true;
-      case 7: return values.busPickup !== '';
-      case 8: return values.blockQuest !== '';
+      case 3: return values.github.trim().length >= 1;
+      case 4: return validateMauritiusPhone(values.phone);
+      case 5: return values.gender !== '';
+      case 6: return values.affiliation !== '';
+      case 7: return values.affiliation === 'Student' ? values.institution !== '' : true;
+      case 8: return values.busPickup !== '';
+      case 9: return values.blockQuest !== '';
+      case 10: return values.dietary.trim().length >= 1;
       default: return true;
     }
   };
 
   const next = () => {
     if (!canProceed()) return;
-    if (step === 5 && values.affiliation === 'Professional') {
-      setStep(7); // Skip step 6 (student institution selection)
-    } else if (step < 9) {
+    if (step === 6 && values.affiliation === 'Professional') {
+      setStep(8); // Skip step 7 (student institution selection)
+    } else if (step < 11) {
       setStep(step + 1);
     }
   };
 
   const prev = () => {
-    if (step === 7 && values.affiliation === 'Professional') {
-      setStep(5);
+    if (step === 8 && values.affiliation === 'Professional') {
+      setStep(6);
     } else if (step > 0) {
       setStep(step - 1);
     }
@@ -284,24 +308,27 @@ const RegistrationSection: React.FC<RegistrationSectionProps> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (step === 9) {
+    if (step === 11) {
       setSubmitting(true);
       
       // Mock network latency
       setTimeout(() => {
-        const ticketId = 'GW-' + Math.random().toString(36).substring(2, 9).toUpperCase();
+        const ticketIdNum = Math.floor(10000000 + Math.random() * 90000000);
+        const ticketId = ticketIdNum.toString();
         
         // Save to localStorage list
         const newRegistration = {
           id: ticketId,
           name: values.name,
           email: values.email,
+          github: values.github,
           phone: values.phone,
           gender: values.gender,
           affiliation: values.affiliation,
           institution: values.affiliation === 'Student' ? values.institution : '',
           busPickup: values.busPickup,
           blockQuest: values.blockQuest,
+          dietary: values.dietary,
           timestamp: new Date().toISOString()
         };
 
@@ -312,6 +339,36 @@ const RegistrationSection: React.FC<RegistrationSectionProps> = ({
 
         localStorage.setItem('genesis-current-ticket-id', ticketId);
         localStorage.setItem('genesis-current-user', JSON.stringify(newRegistration));
+
+        // Format data to match Supabase 'Registration' table structure
+        const cleanedPhone = values.phone.replace(/[\s\(\)\-\+]/g, '');
+        const phoneVal = cleanedPhone ? parseInt(cleanedPhone, 10) : null;
+
+        const dbRegistration = {
+          ticket_id: ticketIdNum,
+          full_name: values.name,
+          email: values.email,
+          github: values.github,
+          phone_number: phoneVal,
+          gender: values.gender,
+          occupation: values.affiliation === 'Student' ? values.institution : 'Professional',
+          Affiliation: values.affiliation,
+          bus: values.busPickup,
+          block_quest: values.blockQuest,
+          Refreshment: values.dietary
+        };
+
+        // Save to Supabase (client-side)
+        supabase
+          .from('Registration')
+          .insert(dbRegistration)
+          .then(({ error: sbError }) => {
+            if (sbError) {
+              console.error('Error saving registration to Supabase:', sbError);
+            } else {
+              console.log('Registration successfully saved to Supabase');
+            }
+          });
 
         // Persist to local JSON file via dev-server API during local development
         fetch('/api/register', {
@@ -326,7 +383,7 @@ const RegistrationSection: React.FC<RegistrationSectionProps> = ({
 
         setCurrentTicketId(ticketId);
         setSubmitting(false);
-        setStep(10);
+        setStep(12);
         
         // Trigger GSAP confetti animation
         if (confettiRef.current) {
@@ -363,17 +420,17 @@ const RegistrationSection: React.FC<RegistrationSectionProps> = ({
   };
 
   const qNumber = () => {
-    if (step === 0 || step >= 9) return null;
+    if (step === 0 || step >= 11) return null;
     if (step <= 5) return step;
     if (step === 6) return 6;
     return values.affiliation === 'Professional' ? step - 1 : step;
   };
 
   const totalQ = () => {
-    return values.affiliation === 'Professional' ? 7 : 8;
+    return values.affiliation === 'Professional' ? 9 : 10;
   };
 
-  if (step === 10) {
+  if (step === 12) {
     return (
       <section id={id} className="py-20 md:py-28 max-w-[1180px] mx-auto px-4 md:px-8 relative overflow-hidden flex items-center justify-center min-h-[90vh]">
         {/* Subtle backdrop glow */}
@@ -629,18 +686,18 @@ const RegistrationSection: React.FC<RegistrationSectionProps> = ({
               </div>
             )}
 
-            {/* Step 3: Phone */}
+            {/* Step 3: GitHub */}
             {step === 3 && (
               <div className="flex flex-col gap-4">
                 <label className="text-xl md:text-2xl font-semibold text-[var(--color-ink)] font-heading">
-                  What is your phone number?
+                  What is your GitHub username?
                 </label>
                 <input
                   autoFocus
-                  type="tel"
-                  placeholder="e.g. +230 5123 4567"
-                  value={values.phone}
-                  onChange={(e) => setValue('phone', e.target.value)}
+                  type="text"
+                  placeholder="e.g. octocat"
+                  value={values.github}
+                  onChange={(e) => setValue('github', e.target.value)}
                   onKeyDown={handleKeyDown}
                   className="w-full border-b-2 border-[var(--color-line)] bg-transparent py-3 text-lg md:text-xl text-[var(--color-ink)] outline-none transition-colors placeholder:opacity-40 focus:border-[var(--color-orange)] font-sans"
                 />
@@ -655,8 +712,39 @@ const RegistrationSection: React.FC<RegistrationSectionProps> = ({
               </div>
             )}
 
-            {/* Step 4: Gender */}
+            {/* Step 4: Phone */}
             {step === 4 && (
+              <div className="flex flex-col gap-4">
+                <label className="text-xl md:text-2xl font-semibold text-[var(--color-ink)] font-heading">
+                  What is your phone number?
+                </label>
+                <input
+                  autoFocus
+                  type="tel"
+                  placeholder="e.g. 5123 4567 or +230 5123 4567"
+                  value={values.phone}
+                  onChange={(e) => setValue('phone', e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  className="w-full border-b-2 border-[var(--color-line)] bg-transparent py-3 text-lg md:text-xl text-[var(--color-ink)] outline-none transition-colors placeholder:opacity-40 focus:border-[var(--color-orange)] font-sans"
+                />
+                {values.phone.trim().length > 0 && !validateMauritiusPhone(values.phone) && (
+                  <p className="text-xs font-mono text-[var(--color-orange)] mt-1">
+                    Please enter a valid Mauritius phone number (mobile: 8 digits starting with 5, landline: 7 digits).
+                  </p>
+                )}
+                <div className="mt-6 flex items-center gap-4">
+                  <Button variant="primary" onClick={(e) => { e.preventDefault(); next(); }} disabled={!canProceed()}>
+                    OK ✓
+                  </Button>
+                  <Button variant="ghost" onClick={(e) => { e.preventDefault(); prev(); }} className="py-2.5 px-3 flex items-center justify-center" aria-label="Back">
+                    <ArrowLeft size={16} />
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {/* Step 5: Gender */}
+            {step === 5 && (
               <div className="flex flex-col gap-5">
                 <label className="text-xl md:text-2xl font-semibold text-[var(--color-ink)] font-heading">
                   What is your gender?
@@ -688,8 +776,8 @@ const RegistrationSection: React.FC<RegistrationSectionProps> = ({
               </div>
             )}
 
-            {/* Step 5: Affiliation */}
-            {step === 5 && (
+            {/* Step 6: Affiliation */}
+            {step === 6 && (
               <div className="flex flex-col gap-5">
                 <label className="text-xl md:text-2xl font-semibold text-[var(--color-ink)] font-heading">
                   Are you a student or professional?
@@ -721,8 +809,8 @@ const RegistrationSection: React.FC<RegistrationSectionProps> = ({
               </div>
             )}
 
-            {/* Step 6: Student Institution */}
-            {step === 6 && values.affiliation === 'Student' && (
+            {/* Step 7: Student Institution */}
+            {step === 7 && values.affiliation === 'Student' && (
               <div className="flex flex-col gap-4">
                 <label className="text-xl md:text-2xl font-semibold text-[var(--color-ink)] font-heading">
                   Select your university / institution
@@ -750,8 +838,8 @@ const RegistrationSection: React.FC<RegistrationSectionProps> = ({
               </div>
             )}
 
-            {/* Step 7: Bus Pickup */}
-            {step === 7 && (
+            {/* Step 8: Bus Pickup */}
+            {step === 8 && (
               <div className="flex flex-col gap-5">
                 <label className="text-xl md:text-2xl font-semibold text-[var(--color-ink)] font-heading">
                   Do you need bus pickup?
@@ -786,8 +874,8 @@ const RegistrationSection: React.FC<RegistrationSectionProps> = ({
               </div>
             )}
 
-            {/* Step 8: Block Quest */}
-            {step === 8 && (
+            {/* Step 9: Block Quest */}
+            {step === 9 && (
               <div className="flex flex-col gap-5">
                 <label className="text-xl md:text-2xl font-semibold text-[var(--color-ink)] font-heading">
                   Will you participate in the Block Quest?
@@ -819,8 +907,66 @@ const RegistrationSection: React.FC<RegistrationSectionProps> = ({
               </div>
             )}
 
-            {/* Step 9: Confirm & Submit */}
-            {step === 9 && (
+            {/* Step 10: Dietary Preference */}
+            {step === 10 && (
+              <div className="flex flex-col gap-5">
+                <label className="text-xl md:text-2xl font-semibold text-[var(--color-ink)] font-heading">
+                  Do you have any dietary preferences?
+                </label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-2 font-mono text-xs uppercase tracking-wider">
+                  {['No preference', 'Vegetarian', 'Vegan', 'Gluten-free', 'Other'].map((option) => {
+                    const isSelected = values.dietary === option || (option === 'Other' && !['No preference', 'Vegetarian', 'Vegan', 'Gluten-free', ''].includes(values.dietary));
+                    return (
+                      <button
+                        key={option}
+                        type="button"
+                        onClick={() => {
+                          if (option === 'Other') {
+                            setValue('dietary', 'Other: ');
+                          } else {
+                            setValue('dietary', option);
+                            setTimeout(next, 300);
+                          }
+                        }}
+                        className={`text-center p-3 border-2 rounded-lg transition-all cursor-pointer ${
+                          isSelected
+                            ? 'bg-[var(--color-orange)] text-[var(--bg)] border-[var(--color-ink)] shadow-[4px_4px_0_0_var(--color-ink)] -translate-x-[2px] -translate-y-[2px]'
+                            : 'bg-transparent text-[var(--color-ink)] border-[var(--color-line)] hover:bg-[var(--color-glass-strong)]'
+                        }`}
+                      >
+                        {option}
+                      </button>
+                    );
+                  })}
+                </div>
+                {/* Specify if Other */}
+                {(values.dietary.startsWith('Other') || (!['No preference', 'Vegetarian', 'Vegan', 'Gluten-free', ''].includes(values.dietary) && values.dietary !== '')) && (
+                  <div className="mt-4 flex flex-col gap-2">
+                    <label className="text-xs font-mono text-[var(--color-ink-dim)]">Please specify:</label>
+                    <input
+                      autoFocus
+                      type="text"
+                      placeholder="e.g. Halal, allergies, etc."
+                      value={values.dietary.startsWith('Other: ') ? values.dietary.substring(7) : values.dietary}
+                      onChange={(e) => setValue('dietary', `Other: ${e.target.value}`)}
+                      onKeyDown={handleKeyDown}
+                      className="w-full border-b-2 border-[var(--color-line)] bg-transparent py-2 text-base text-[var(--color-ink)] outline-none focus:border-[var(--color-orange)] font-sans"
+                    />
+                  </div>
+                )}
+                <div className="mt-4 flex items-center gap-4">
+                  <Button variant="primary" onClick={(e) => { e.preventDefault(); next(); }} disabled={!canProceed()}>
+                    OK ✓
+                  </Button>
+                  <Button variant="ghost" onClick={(e) => { e.preventDefault(); prev(); }} className="py-2.5 px-3 flex items-center justify-center" aria-label="Back">
+                    <ArrowLeft size={16} />
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {/* Step 11: Confirm & Submit */}
+            {step === 11 && (
               <div className="flex flex-col gap-5">
                 <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-[var(--color-ink)] font-heading">
                   Ready to Submit?
@@ -828,11 +974,13 @@ const RegistrationSection: React.FC<RegistrationSectionProps> = ({
                 <div className="bg-[var(--color-bg-soft)] border border-[var(--color-line)] p-5 rounded-lg text-sm font-mono flex flex-col gap-2 leading-relaxed">
                   <div><strong>Name:</strong> {values.name}</div>
                   <div><strong>Email:</strong> {values.email}</div>
+                  <div><strong>GitHub:</strong> {values.github}</div>
                   <div><strong>Phone:</strong> {values.phone}</div>
                   <div><strong>Gender:</strong> {values.gender}</div>
                   <div><strong>Affiliation:</strong> {values.affiliation} {values.affiliation === 'Student' && `(${values.institution})`}</div>
                   <div><strong>Bus Pickup:</strong> {values.busPickup}</div>
                   <div><strong>Block Quest:</strong> {values.blockQuest}</div>
+                  <div><strong>Dietary Preference:</strong> {values.dietary}</div>
                 </div>
                 <div ref={confettiRef} className="mt-4 flex items-center gap-4">
                   <Button variant="primary" as="button" className="py-3 px-8">
@@ -845,8 +993,8 @@ const RegistrationSection: React.FC<RegistrationSectionProps> = ({
               </div>
             )}
 
-            {/* Step 10: Success Screen */}
-            {step === 10 && (
+            {/* Step 12: Success Screen */}
+            {step === 12 && (
               <div className="flex flex-col gap-5 items-start">
                 <span className="text-5xl select-none">🎉</span>
                 <h2 className="text-3xl font-bold tracking-tight text-[var(--color-ink)] font-heading">
@@ -872,12 +1020,14 @@ const RegistrationSection: React.FC<RegistrationSectionProps> = ({
                       setValues({
                         name: '',
                         email: '',
+                        github: '',
                         phone: '',
                         gender: '',
                         affiliation: '',
                         institution: '',
                         busPickup: '',
-                        blockQuest: ''
+                        blockQuest: '',
+                        dietary: ''
                       });
                     }}
                   >
@@ -900,7 +1050,7 @@ const RegistrationSection: React.FC<RegistrationSectionProps> = ({
         <div className={`hidden md:flex md:w-2/5 ${isDarkBg ? 'bg-black' : 'bg-white'} relative flex-col items-center justify-center p-12 overflow-hidden select-none rounded-2xl`}>
           <div className="absolute inset-0 bg-grid-pattern opacity-[0.03] pointer-events-none" />
           
-          {step === 10 ? (
+          {step === 12 ? (
             <div className="absolute inset-0 z-10 w-full h-full flex justify-center items-center p-6 bg-[var(--color-bg-soft)] rounded-2xl">
               {/* HTML Ticket Preview */}
               <div className={`w-full max-w-[340px] border-y-0 border-x-[12px] border-[var(--color-orange)] ${isDarkBg ? 'bg-black text-white' : 'bg-white text-black'} p-6 rounded-xl shadow-lg flex flex-col gap-4 font-sans text-left border border-[var(--color-line)]`}>
