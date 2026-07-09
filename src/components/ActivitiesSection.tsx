@@ -75,14 +75,14 @@ const ActivitiesSection: React.FC<ActivitiesSectionProps> = ({ isDarkBg }) => {
 
         {/* Card 2: Base58 LARP Game */}
         <a 
-          href="https://base58.info/"
+          href="https://workshop.base58.school/"
           target="_blank"
           rel="noopener noreferrer"
           className="flex flex-col md:flex-row gap-8 md:gap-10 items-stretch cursor-pointer hover:opacity-85 transition-opacity duration-200 group no-underline text-inherit"
         >
           {/* Left Side: Styled Text Box instead of Image */}
-          <div className="w-full md:w-[280px] lg:w-[340px] shrink-0 rounded-2xl bg-[var(--color-bg-soft)] border border-[var(--color-line)] aspect-square flex items-center justify-center select-none">
-            <span className="text-3xl md:text-4xl lg:text-5xl font-black font-heading tracking-tight text-[var(--color-ink)]">
+          <div className="w-full md:w-[280px] lg:w-[340px] shrink-0 aspect-square flex items-center justify-center select-none">
+            <span className="text-4xl font-bold font-mono text-[var(--color-ink)]">
               Base58⛓️🔓
             </span>
           </div>
@@ -115,13 +115,9 @@ const ActivitiesSection: React.FC<ActivitiesSectionProps> = ({ isDarkBg }) => {
 
             {/* Footer with Host Info */}
             <div className="pt-4 mt-6 flex items-center justify-between">
-              <div className="flex items-center">
-                <img 
-                  src={hostLogo} 
-                  alt={hostText}
-                  className="h-16 md:h-20 w-auto object-contain"
-                />
-              </div>
+              <span className="text-1xl font-mono text-[var(--color-ink)]">
+              Base58⛓️🔓
+            </span>
               <span className="font-mono text-xs font-semibold text-[var(--color-orange)] group-hover:underline flex items-center gap-1">
                 Learn more about Base58 →
               </span>

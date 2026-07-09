@@ -70,9 +70,9 @@ const BlockQuestDetailsSection: React.FC<BlockQuestDetailsProps> = ({ isDarkBg }
   ];
 
   const prizes = [
-    { rank: '🥇 1st Place', amount: 'MUR 5,000', color: 'border-yellow-500/30 bg-yellow-500/5' },
-    { rank: '🥈 2nd Place', amount: 'MUR 3,000', color: 'border-slate-400/30 bg-slate-400/5' },
-    { rank: '🥉 3rd Place', amount: 'MUR 2,000', color: 'border-amber-600/30 bg-amber-600/5' }
+    { rank: '🥇 1st Place', amount: 'MUR 5,000', color: 'bg-yellow-500/5' },
+    { rank: '🥈 2nd Place', amount: 'MUR 3,000', color: 'bg-slate-400/5' },
+    { rank: '🥉 3rd Place', amount: 'MUR 2,000', color: 'bg-amber-600/5' }
   ];
 
   return (
@@ -93,7 +93,7 @@ const BlockQuestDetailsSection: React.FC<BlockQuestDetailsProps> = ({ isDarkBg }
         <a
           href="#"
           onClick={(e) => { e.preventDefault(); window.location.hash = ''; }}
-          className="flex items-center gap-2 border border-[var(--color-line)] bg-[var(--color-glass)] px-4 py-2 text-[var(--color-ink)] hover:bg-[var(--color-glass-strong)] transition-all duration-200 rounded-lg font-mono font-bold uppercase tracking-wider text-xs cursor-pointer shadow-[2px_2px_0_0_var(--color-ink)]"
+          className="flex items-center gap-2 text-[var(--color-ink)] hover:text-[var(--color-orange)] transition-colors duration-200 font-mono font-bold uppercase tracking-wider text-xs cursor-pointer"
         >
           <ArrowLeft className="h-4.5 w-4.5" />
           <span>back to home</span>
@@ -101,7 +101,7 @@ const BlockQuestDetailsSection: React.FC<BlockQuestDetailsProps> = ({ isDarkBg }
       </nav>
 
       {/* Header */}
-      <div className="mt-8 mb-12 border-b border-[var(--color-line)] pb-8">
+      <div className="mt-8 mb-12 pb-6">
         <div className="flex items-center gap-3 text-[var(--color-orange)] mb-3">
           <Terminal size={32} />
           <span className="font-mono text-sm uppercase tracking-wider font-semibold">Technical Challenge</span>
@@ -125,8 +125,8 @@ const BlockQuestDetailsSection: React.FC<BlockQuestDetailsProps> = ({ isDarkBg }
         </p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {objectives.map((item, idx) => (
-            <div key={idx} className="flex gap-4 items-start p-4 rounded-lg bg-[var(--color-bg-soft)] border border-[var(--color-line)]">
-              <div className="border border-[var(--color-line)] p-2 rounded-lg bg-[var(--color-glass)] flex-shrink-0">
+            <div key={idx} className="flex gap-4 items-start py-2">
+              <div className="p-1.5 flex-shrink-0">
                 {item.icon}
               </div>
               <div>
@@ -151,11 +151,11 @@ const BlockQuestDetailsSection: React.FC<BlockQuestDetailsProps> = ({ isDarkBg }
         <p className="text-sm md:text-base text-[var(--color-ink-dim)] mb-6 font-mono">
           The challenge is executed in four distinct phases designed to reward thoughtful engineering over speed.
         </p>
-        <div className="relative border-l border-[var(--color-line)] ml-4 pl-8 space-y-8">
+        <div className="relative ml-4 pl-6 space-y-8">
           {phases.map((phase, idx) => (
             <div key={idx} className="relative text-left">
               {/* Phase Dot Node */}
-              <div className="absolute -left-[41px] top-1 w-4 h-4 rounded-full border-4 border-[var(--color-orange)] bg-[var(--color-glass)] z-10" />
+              <div className="absolute -left-[27px] top-2.5 w-2 h-2 rounded-full bg-[var(--color-orange)] z-10" />
               <span className="font-mono text-xs font-bold text-[var(--color-orange)] uppercase tracking-widest block mb-1">
                 {phase.subtitle}
               </span>
@@ -179,14 +179,14 @@ const BlockQuestDetailsSection: React.FC<BlockQuestDetailsProps> = ({ isDarkBg }
         <p className="text-sm md:text-base text-[var(--color-ink-dim)] mb-6 font-mono">
           There is no score for writing the most code. Evaluation is based on the following weights:
         </p>
-        <div className="space-y-4 max-w-xl bg-[var(--color-bg-soft)] border border-[var(--color-line)] p-6 rounded-xl">
+        <div className="space-y-4 max-w-xl py-2">
           {criteria.map((item, idx) => (
             <div key={idx} className="space-y-2">
               <div className="flex justify-between text-sm font-semibold font-mono">
                 <span className="text-[var(--color-ink)]">{item.label}</span>
                 <span className="text-[var(--color-orange)]">{item.weight}%</span>
               </div>
-              <div className="w-full h-2.5 bg-[var(--color-line)] rounded-full overflow-hidden">
+              <div className="w-full h-2.5 bg-[var(--color-bg-soft)] rounded-full overflow-hidden">
                 <div 
                   className="h-full bg-[var(--color-orange)] rounded-full" 
                   style={{ width: `${item.weight}%` }} 
@@ -210,13 +210,13 @@ const BlockQuestDetailsSection: React.FC<BlockQuestDetailsProps> = ({ isDarkBg }
           {prizes.map((prize, idx) => (
             <div 
               key={idx} 
-              className={`border border-[var(--color-line)] p-5 rounded-xl text-center font-mono flex flex-col justify-center items-center shadow-sm ${prize.color}`}
+              className={`p-5 rounded-xl text-center font-mono flex flex-col justify-center items-center ${prize.color}`}
             >
               <span className="text-sm font-bold text-[var(--color-ink)] uppercase tracking-wider block mb-2">
                 {prize.rank}
               </span>
               <span className="text-xl font-black text-[var(--color-orange)]">
-                {prize.amount}
+                {prize.amount || 'MUR 3,000'}
               </span>
             </div>
           ))}
