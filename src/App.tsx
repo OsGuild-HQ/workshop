@@ -8,6 +8,7 @@ import './App.css';
 import AboutSection from './components/AboutSection';
 import WhySection from './components/WhySection';
 import CareerPathway from './components/CareerPathway';
+import ActivitiesSection from './components/ActivitiesSection';
 import AgendaSection from './components/AgendaSection';
 import SpeakersSection from './components/SpeakersSection';
 import EventDetailsSection from './components/EventDetailsSection';
@@ -16,6 +17,7 @@ import FaqSection from './components/FaqSection';
 import CtaSection from './components/CtaSection';
 import RegistrationSection from './components/RegistrationSection';
 import TicketVerificationSection from './components/TicketVerificationSection';
+import BlockQuestDetailsSection from './components/BlockQuestDetailsSection';
 import Footer from './components/Footer';
 import BackToTop from './components/BackToTop';
 
@@ -83,6 +85,14 @@ function App() {
     );
   }
 
+  if (routeInfo.route === 'block-quest') {
+    return (
+      <div className={`app-container ${isDarkBg ? 'dark-bg' : ''}`}>
+        <BlockQuestDetailsSection isDarkBg={isDarkBg} />
+      </div>
+    );
+  }
+
   return (
     <div className={`app-container ${isDarkBg ? 'dark-bg' : ''}`}>
       {/* Interactive CardNav */}
@@ -134,6 +144,7 @@ function App() {
         <AboutSection />
         <WhySection />
         <CareerPathway />
+        <ActivitiesSection isDarkBg={isDarkBg} />
         <SpeakersSection />
         <AgendaSection />
         <EventDetailsSection />
