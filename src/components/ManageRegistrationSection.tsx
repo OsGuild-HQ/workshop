@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { createClient } from '../utils/supabase/client';
-import { ArrowLeft, Search, CheckCircle, XCircle, LogOut, Download, Loader2, ShieldAlert } from 'lucide-react';
+import { ArrowLeft, Search, CheckCircle, XCircle, LogOut, Download, Loader2, ShieldAlert, Sun, Moon } from 'lucide-react';
 import Button from './ui/Button';
 
 interface RegistrationRecord {
@@ -24,7 +24,7 @@ interface ManageRegistrationProps {
   toggleTheme: () => void;
 }
 
-const ManageRegistrationSection: React.FC<ManageRegistrationProps> = ({ isDarkBg }) => {
+const ManageRegistrationSection: React.FC<ManageRegistrationProps> = ({ isDarkBg, toggleTheme }) => {
   const supabase = createClient();
 
   // Auth state
@@ -219,11 +219,18 @@ const ManageRegistrationSection: React.FC<ManageRegistrationProps> = ({ isDarkBg
             <ArrowLeft className="h-4.5 w-4.5" />
             <span>back to home</span>
           </a>
+          <button
+            onClick={toggleTheme}
+            className="p-2 border border-[var(--color-line)] bg-[var(--color-glass)] text-[var(--color-ink)] hover:bg-[var(--color-glass-strong)] transition-all duration-200 rounded-lg cursor-pointer shadow-[2px_2px_0_0_var(--color-ink)]"
+            aria-label="Toggle theme"
+          >
+            {isDarkBg ? <Sun className="w-4.5 h-4.5" /> : <Moon className="w-4.5 h-4.5" />}
+          </button>
         </nav>
 
-        <div className="w-full brutal-card p-8 bg-[var(--color-glass)] border-3 border-[var(--color-ink)] shadow-[8px_8px_0_0_var(--color-orange)]">
-          <h2 className="text-2xl font-black font-heading text-[var(--color-ink)] mb-6 text-center uppercase tracking-tight">
-            Admin Management Portal 🛠️
+        <div className="w-full p-8 bg-[var(--color-glass)]">
+          <h2 className="text-3xl font-black font-heading text-[var(--color-ink)] mb-6 text-center uppercase tracking-tight">
+            login
           </h2>
           <p className="text-sm font-mono text-[var(--color-ink-dim)] mb-6 text-center leading-relaxed">
             Please log in with your dashboard credentials to view attendees and scan validation checks.
@@ -296,7 +303,14 @@ const ManageRegistrationSection: React.FC<ManageRegistrationProps> = ({ isDarkBg
             Manage registrations, scan check-ins, and export attendee data.
           </p>
         </div>
-        <div className="flex gap-3">
+        <div className="flex gap-3 items-center">
+          <button
+            onClick={toggleTheme}
+            className="p-2.5 border border-[var(--color-line)] bg-[var(--color-bg-soft)] text-[var(--color-ink)] hover:bg-[var(--color-glass-strong)] transition-all duration-200 rounded-lg cursor-pointer"
+            aria-label="Toggle theme"
+          >
+            {isDarkBg ? <Sun className="w-4.5 h-4.5" /> : <Moon className="w-4.5 h-4.5" />}
+          </button>
           <Button variant="ghost" onClick={fetchRegistrations} className="px-4 text-xs font-bold font-mono">
             REFRESH DATA ↻
           </Button>

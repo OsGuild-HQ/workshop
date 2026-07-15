@@ -51,6 +51,6 @@ export const speakers: Speaker[] = [
     name: "Tooshar Sauntoo",
     organization: "Software engineer",
     image: toosharImage,
-    github: ""
+    github: "https://github.com/TxKxS"
   }
 ];
