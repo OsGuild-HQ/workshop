@@ -48,7 +48,7 @@ const ActivitiesSection: React.FC<ActivitiesSectionProps> = ({ isDarkBg }) => {
 
               {/* Title */}
               <h3 className="text-2xl md:text-3xl font-bold font-heading text-[var(--color-ink)] mb-3">
-                Block Quest
+                Block Quest 🧱🔍
               </h3>
 
               {/* Description */}
@@ -104,7 +104,7 @@ const ActivitiesSection: React.FC<ActivitiesSectionProps> = ({ isDarkBg }) => {
 
               {/* Title */}
               <h3 className="text-2xl md:text-3xl font-bold font-heading text-[var(--color-ink)] mb-3">
-                Base58 LARP Game
+                Base58 LARP Game ⛓️🔓
               </h3>
 
               {/* Description */}

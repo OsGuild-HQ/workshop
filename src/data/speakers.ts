@@ -1,6 +1,8 @@
 import sadiqImage from '../assets/speakers/Sadiq.jpg';
 import simonImage from '../assets/speakers/simon.jpeg';
 import chuksImage from '../assets/speakers/chuks.jpg';
+import hanifImage from '../assets/speakers/Hanif.jpg';
+import toosharImage from '../assets/speakers/Tooshar.jpg';
 
 export interface Speaker {
   id: string;
@@ -36,5 +38,19 @@ export const speakers: Speaker[] = [
     organization: "Btrust Grantee & LDK contributor",
     image: chuksImage,
     github: "https://github.com/chuksys?ref=blog.btrust.tech"
+  },
+  {
+    id: "hanif",
+    name: "Hanif Olayiwola",
+    organization: "Founder, The Blockchain Society ALCHE",
+    image: hanifImage,
+    github: ""
+  },
+  {
+    id: "tooshar",
+    name: "Tooshar Sauntoo",
+    organization: "Software engineer",
+    image: toosharImage,
+    github: ""
   }
 ];
