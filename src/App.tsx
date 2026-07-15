@@ -18,6 +18,7 @@ import CtaSection from './components/CtaSection';
 import RegistrationSection from './components/RegistrationSection';
 import TicketVerificationSection from './components/TicketVerificationSection';
 import BlockQuestDetailsSection from './components/BlockQuestDetailsSection';
+import ManageRegistrationSection from './components/ManageRegistrationSection';
 import Footer from './components/Footer';
 import BackToTop from './components/BackToTop';
 
@@ -89,6 +90,14 @@ function App() {
     return (
       <div className={`app-container ${isDarkBg ? 'dark-bg' : ''}`}>
         <BlockQuestDetailsSection isDarkBg={isDarkBg} />
+      </div>
+    );
+  }
+
+  if (routeInfo.route === 'manage') {
+    return (
+      <div className={`app-container ${isDarkBg ? 'dark-bg' : ''}`}>
+        <ManageRegistrationSection isDarkBg={isDarkBg} toggleTheme={toggleTheme} />
       </div>
     );
   }

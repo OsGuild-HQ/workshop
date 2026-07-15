@@ -13,6 +13,40 @@ const supabase = createClient();
 const TicketVerificationSection: React.FC<TicketVerificationSectionProps> = ({ ticketId, isDarkBg }) => {
   const [ticket, setTicket] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [checkingIn, setCheckingIn] = useState(false);
+
+  useEffect(() => {
+    const adminSession = localStorage.getItem('genesis-admin-session');
+    if (adminSession) {
+      setIsAdmin(true);
+    }
+  }, []);
+
+  const handleAdminCheckIn = async () => {
+    if (!ticket) return;
+    setCheckingIn(true);
+    try {
+      const ticketIdNum = parseInt(ticket.id, 10);
+      const newStatus = !ticket.checkedIn;
+      
+      const { error } = await supabase
+        .from('Registration')
+        .update({ checked_in: newStatus })
+        .eq('ticket_id', ticketIdNum);
+
+      if (error) {
+        console.error('Check-in failed:', error);
+        alert('Check-in failed: ' + error.message);
+      } else {
+        setTicket((prev: any) => prev ? { ...prev, checkedIn: newStatus } : null);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setCheckingIn(false);
+    }
+  };
 
   useEffect(() => {
     let active = true;
@@ -41,6 +75,7 @@ const TicketVerificationSection: React.FC<TicketVerificationSectionProps> = ({ t
               busPickup: data.bus,
               blockQuest: data.block_quest,
               dietary: data.Refreshment || 'No preference',
+              checkedIn: !!data.checked_in, // Safeguard null column states automatically to false
               timestamp: data.created_at
             };
             setTicket(mappedData);
@@ -171,11 +206,31 @@ const TicketVerificationSection: React.FC<TicketVerificationSectionProps> = ({ t
                 <span className="text-[var(--color-ink-dim)] uppercase">Dietary Pref:</span>
                 <span className="text-[var(--color-ink)]">{ticket.dietary}</span>
               </div>
+              <div className="flex justify-between border-b border-[var(--color-line)] pb-2">
+                <span className="text-[var(--color-ink-dim)] uppercase">Attendance:</span>
+                <span className={`font-bold ${ticket.checkedIn ? 'text-green-500 font-mono' : 'text-amber-500 font-mono'}`}>
+                  {ticket.checkedIn ? 'ATTENDED ✓' : 'PENDING CHECK-IN'}
+                </span>
+              </div>
               <div className="flex justify-between">
                 <span className="text-[var(--color-ink-dim)] uppercase">Registered On:</span>
                 <span className="text-[var(--color-ink)]">{new Date(ticket.timestamp).toLocaleString()}</span>
               </div>
             </div>
+
+            {isAdmin && (
+              <Button 
+                onClick={handleAdminCheckIn} 
+                disabled={checkingIn} 
+                className={`w-full mt-2 mb-4 py-3 font-mono font-bold text-xs uppercase tracking-wider rounded-xl transition-all border ${
+                  ticket.checkedIn
+                    ? 'bg-red-500/10 text-red-500 border border-red-500/20 hover:bg-red-500/20'
+                    : 'bg-[var(--color-orange)] text-[var(--color-bg-soft)] border border-[var(--color-ink)] hover:opacity-90'
+                }`}
+              >
+                {checkingIn ? 'Updating Check-In...' : ticket.checkedIn ? 'Cancel Attendance Check ✓' : 'Validate Check-In ✓'}
+              </Button>
+            )}
 
             <p className="text-xs text-[var(--color-ink-dim)] text-center max-w-[40ch] mt-4 leading-relaxed">
               This ticket is active and ready for the workshop check-in desk at Workshop17 Telfair on July 25th, 2026.
