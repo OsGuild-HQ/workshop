@@ -17,6 +17,7 @@ interface RegistrationSectionProps {
 }
 
 const supabase = createClient();
+const IS_REGISTRATION_PAUSED = true;
 
 const INSTITUTIONS = [
   'University of Mauritius',
@@ -80,6 +81,7 @@ const RegistrationSection: React.FC<RegistrationSectionProps> = ({
   });
 
   const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
   const confettiRef = useRef<HTMLDivElement>(null);
   const [downloading, setDownloading] = useState(false);
   const [currentTicketId, setCurrentTicketId] = useState(() => {
@@ -308,6 +310,10 @@ const RegistrationSection: React.FC<RegistrationSectionProps> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (IS_REGISTRATION_PAUSED) {
+      setSubmitError("Oops something went wrong please try again later");
+      return;
+    }
     if (step === 11) {
       setSubmitting(true);
       
@@ -623,14 +629,21 @@ const RegistrationSection: React.FC<RegistrationSectionProps> = ({
                 <p className="text-[1rem] text-[var(--color-ink-dim)] leading-relaxed max-w-[50ch]">
                   Join the next generation of open source developers. Take a few moments to fill in your application.
                 </p>
-                <div className="mt-4 flex flex-wrap items-center gap-4">
-                  <Button variant="primary" onClick={(e) => { e.preventDefault(); setStep(1); }}>
-                    Start Registration
-                  </Button>
-                  <span className="hidden sm:inline font-mono text-xs text-[var(--color-ink-dim)]">
-                    press <strong className="text-[var(--color-ink)]">Enter ↵</strong>
-                  </span>
-                </div>
+                {IS_REGISTRATION_PAUSED ? (
+                  <div className="mt-4 p-4 rounded-xl border border-red-500/30 bg-red-500/10 text-red-500 font-mono text-sm font-semibold flex items-center gap-3">
+                    <span className="text-lg">⚠️</span>
+                    <span>Oops something went wrong please try again later</span>
+                  </div>
+                ) : (
+                  <div className="mt-4 flex flex-wrap items-center gap-4">
+                    <Button variant="primary" onClick={(e) => { e.preventDefault(); setStep(1); }}>
+                      Start Registration
+                    </Button>
+                    <span className="hidden sm:inline font-mono text-xs text-[var(--color-ink-dim)]">
+                      press <strong className="text-[var(--color-ink)]">Enter ↵</strong>
+                    </span>
+                  </div>
+                )}
               </div>
             )}
 
@@ -971,6 +984,12 @@ const RegistrationSection: React.FC<RegistrationSectionProps> = ({
                 <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-[var(--color-ink)] font-heading">
                   Ready to Submit?
                 </h2>
+                {(submitError || IS_REGISTRATION_PAUSED) && (
+                  <div className="p-4 rounded-xl border border-red-500/30 bg-red-500/10 text-red-500 font-mono text-sm font-semibold flex items-center gap-3">
+                    <span className="text-lg">⚠️</span>
+                    <span>Oops something went wrong please try again later</span>
+                  </div>
+                )}
                 <div className="bg-[var(--color-bg-soft)] border border-[var(--color-line)] p-5 rounded-lg text-sm font-mono flex flex-col gap-2 leading-relaxed">
                   <div><strong>Name:</strong> {values.name}</div>
                   <div><strong>Email:</strong> {values.email}</div>
@@ -983,7 +1002,12 @@ const RegistrationSection: React.FC<RegistrationSectionProps> = ({
                   <div><strong>Dietary Preference:</strong> {values.dietary}</div>
                 </div>
                 <div ref={confettiRef} className="mt-4 flex items-center gap-4">
-                  <Button variant="primary" as="button" className="py-3 px-8">
+                  <Button 
+                    variant="primary" 
+                    as="button" 
+                    className="py-3 px-8"
+                    disabled={IS_REGISTRATION_PAUSED}
+                  >
                     {submitting ? 'Registering...' : 'Register Now'}
                   </Button>
                   <Button variant="ghost" onClick={(e) => { e.preventDefault(); prev(); }} className="py-2.5 px-3 flex items-center justify-center" aria-label="Back">
