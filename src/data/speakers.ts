@@ -3,6 +3,7 @@ import simonImage from '../assets/speakers/simon.jpeg';
 import chuksImage from '../assets/speakers/chuks.jpg';
 import hanifImage from '../assets/speakers/Hanif.jpg';
 import toosharImage from '../assets/speakers/Tooshar.jpg';
+import shaniaImage from '../assets/speakers/shania.jpg';
 
 export interface Speaker {
   id: string;
@@ -52,5 +53,12 @@ export const speakers: Speaker[] = [
     organization: "Software engineer",
     image: toosharImage,
     github: "https://github.com/TxKxS"
+  },
+  {
+    id: "shania",
+    name: "Tinkouree Bibi Shania",
+    organization: "Software engineer",
+    image: shaniaImage,
+    github: "https://github.com/shania-prin"
   }
 ];
