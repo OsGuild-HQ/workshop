@@ -17,7 +17,7 @@ interface RegistrationSectionProps {
 }
 
 const supabase = createClient();
-const IS_REGISTRATION_PAUSED = true;
+const IS_REGISTRATION_PAUSED = false;
 
 const INSTITUTIONS = [
   'University of Mauritius',
