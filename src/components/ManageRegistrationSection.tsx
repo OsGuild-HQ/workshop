@@ -27,10 +27,11 @@ interface ManageRegistrationProps {
 const ManageRegistrationSection: React.FC<ManageRegistrationProps> = ({ isDarkBg, toggleTheme }) => {
   const supabase = createClient();
 
-  // Auth state
+  // Auth & role state
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userUniversity, setUserUniversity] = useState<string>('ADMIN');
   const [loginError, setLoginError] = useState('');
   const [authenticating, setAuthenticating] = useState(false);
 
@@ -42,10 +43,27 @@ const ManageRegistrationSection: React.FC<ManageRegistrationProps> = ({ isDarkBg
   const [filterType, setFilterType] = useState<'all' | 'checked' | 'pending' | 'student' | 'professional'>('all');
   const [updatingTicket, setUpdatingTicket] = useState<number | null>(null);
 
+  // Helper function to resolve university code to target institution name
+  const getTargetInstitution = (code: string): string | null => {
+    const normalized = (code || '').trim().toUpperCase();
+    if (normalized === 'ADMIN' || normalized === 'ALL' || !normalized) return null;
+    if (normalized === 'MDX' || normalized.includes('MIDDLESEX')) return 'Middlesex University';
+    if (normalized === 'UOM' || normalized.includes('MAURITIUS')) return 'University of Mauritius';
+    if (normalized === 'ALCHE') return 'ALCHE';
+    if (normalized === 'CURTIN') return 'Curtin Mauritius';
+    return code;
+  };
+
   // Check login session on mount
   useEffect(() => {
     const session = localStorage.getItem('genesis-admin-session');
     if (session) {
+      try {
+        const parsed = JSON.parse(session);
+        setUserUniversity(parsed.university || 'ADMIN');
+      } catch (e) {
+        setUserUniversity('ADMIN');
+      }
       setIsLoggedIn(true);
       fetchRegistrations();
     }
@@ -74,7 +92,12 @@ const ManageRegistrationSection: React.FC<ManageRegistrationProps> = ({ isDarkBg
         setLoginError('Database authentication error. Check RLS policies.');
       } else if (data) {
         setIsLoggedIn(true);
-        localStorage.setItem('genesis-admin-session', data.username);
+        const uni = data.university || 'ADMIN';
+        setUserUniversity(uni);
+        localStorage.setItem('genesis-admin-session', JSON.stringify({
+          username: data.username,
+          university: uni
+        }));
         fetchRegistrations();
       } else {
         setLoginError('Invalid username or password');
@@ -147,10 +170,10 @@ const ManageRegistrationSection: React.FC<ManageRegistrationProps> = ({ isDarkBg
 
   // CSV Export utility
   const exportToCSV = () => {
-    if (records.length === 0) return;
+    if (scopedRecords.length === 0) return;
     
     const headers = ['Ticket ID', 'Registered On', 'Full Name', 'Email', 'GitHub', 'Phone', 'Gender', 'Affiliation', 'Occupation/Institution', 'Bus Pickup', 'Block Quest', 'Dietary Pref', 'Checked In'];
-    const rows = records.map(rec => [
+    const rows = scopedRecords.map(rec => [
       rec.ticket_id,
       new Date(rec.created_at).toLocaleString(),
       `"${rec.full_name.replace(/"/g, '""')}"`,
@@ -171,14 +194,22 @@ const ManageRegistrationSection: React.FC<ManageRegistrationProps> = ({ isDarkBg
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.setAttribute('href', url);
-    link.setAttribute('download', `OSGuild_Genesis_Registrations_${new Date().toISOString().split('T')[0]}.csv`);
+    link.setAttribute('download', `OSGuild_Genesis_Registrations_${userUniversity}_${new Date().toISOString().split('T')[0]}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
   };
 
-  // Filtered dataset
-  const filteredRecords = records.filter(rec => {
+  // University-scoped dataset (ADMIN sees all, MDX / UOM / ALCHE see their own institution)
+  const targetInstitution = getTargetInstitution(userUniversity);
+
+  const scopedRecords = records.filter(rec => {
+    if (!targetInstitution) return true; // ADMIN
+    return rec.occupation.toLowerCase().includes(targetInstitution.toLowerCase());
+  });
+
+  // Filtered dataset for active search and tabs
+  const filteredRecords = scopedRecords.filter(rec => {
     // 1. Search term match
     const searchLower = searchTerm.toLowerCase();
     const matchesSearch = 
@@ -199,11 +230,11 @@ const ManageRegistrationSection: React.FC<ManageRegistrationProps> = ({ isDarkBg
     }
   });
 
-  // Calculate statistics
-  const totalRegistered = records.length;
-  const totalCheckedIn = records.filter(r => r.checked_in).length;
-  const totalStudents = records.filter(r => r.Affiliation === 'Student').length;
-  const totalProfessionals = records.filter(r => r.Affiliation === 'Professional').length;
+  // Calculate statistics based on scoped records
+  const totalRegistered = scopedRecords.length;
+  const totalCheckedIn = scopedRecords.filter(r => r.checked_in).length;
+  const totalStudents = scopedRecords.filter(r => r.Affiliation === 'Student').length;
+  const totalProfessionals = scopedRecords.filter(r => r.Affiliation === 'Professional').length;
   const checkInRate = totalRegistered > 0 ? Math.round((totalCheckedIn / totalRegistered) * 100) : 0;
 
   // Login view
@@ -297,10 +328,12 @@ const ManageRegistrationSection: React.FC<ManageRegistrationProps> = ({ isDarkBg
       <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-[var(--color-line)] pb-6 mb-8 gap-4 font-mono">
         <div>
           <h1 className="text-3xl font-black font-heading text-[var(--color-ink)] uppercase">
-            OSGuild Registrations 🛠️
+            OSGuild Registrations {targetInstitution ? `(${userUniversity.trim().toUpperCase()})` : '(ADMIN)'} 🛠️
           </h1>
           <p className="text-sm text-[var(--color-ink-dim)] mt-1">
-            Manage registrations, scan check-ins, and export attendee data.
+            {targetInstitution 
+              ? `Managing attendees for ${targetInstitution}` 
+              : 'Manage all registrations, scan check-ins, and export attendee data.'}
           </p>
         </div>
         <div className="flex gap-3 items-center">
