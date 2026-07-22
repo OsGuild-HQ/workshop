@@ -28,7 +28,7 @@ export const agendaData: Record<string, AgendaTrack> = {
       {
         time: "09:00",
         label: "Registration & Check-in",
-        speaker: "OSGuild Team",
+        speaker: "The Team",
         status: "completed",
         badge: "Delivered",
         details: [

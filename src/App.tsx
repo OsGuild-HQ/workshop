@@ -19,6 +19,7 @@ import RegistrationSection from './components/RegistrationSection';
 import TicketVerificationSection from './components/TicketVerificationSection';
 import BlockQuestDetailsSection from './components/BlockQuestDetailsSection';
 import ManageRegistrationSection from './components/ManageRegistrationSection';
+import LunchOrderSection from './components/LunchOrderSection';
 import Footer from './components/Footer';
 import BackToTop from './components/BackToTop';
 
@@ -98,6 +99,14 @@ function App() {
     return (
       <div className={`app-container ${isDarkBg ? 'dark-bg' : ''}`}>
         <ManageRegistrationSection isDarkBg={isDarkBg} toggleTheme={toggleTheme} />
+      </div>
+    );
+  }
+
+  if (routeInfo.route === 'lunch') {
+    return (
+      <div className={`app-container ${isDarkBg ? 'dark-bg' : ''}`}>
+        <LunchOrderSection isDarkBg={isDarkBg} toggleTheme={toggleTheme} />
       </div>
     );
   }

@@ -23,9 +23,12 @@ const Footer: React.FC = () => {
             <span className="font-mono text-xs uppercase tracking-wider text-[var(--color-orange)]">
               // Organized By
             </span>
-            <div className="flex flex-col gap-2 text-sm text-[var(--color-ink)]">
+            <div className="flex flex-col gap-2 text-sm text-[var(--color-ink)] font-mono">
               <span>OSGuild</span>
               <span>BitDevs Mauritius</span>
+              <a href="#lunch" className="text-[var(--color-orange)] hover:underline mt-1 font-bold">
+                Lunch Voucher & Order Portal 🍱
+              </a>
             </div>
           </div>
 

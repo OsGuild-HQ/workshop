@@ -21,6 +21,7 @@ const CardNav: React.FC<CardNavProps> = ({
     { label: 'Career Pathway', href: '#career-pathway' },
     { label: 'Speakers', href: '#speakers' },
     { label: 'Agenda', href: '#agenda' },
+    { label: 'Lunch Order 🍱', href: '#lunch' },
     { label: 'Venue', href: '#details' }
   ];
 
