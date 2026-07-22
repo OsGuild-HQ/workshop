@@ -270,6 +270,22 @@ const LunchOrderSection: React.FC<LunchOrderSectionProps> = ({ isDarkBg = false,
       return;
     }
 
+    // Check if an order already exists for this email in Supabase
+    try {
+      const { data: existingOrders } = await supabase
+        .from('lunch')
+        .select('*')
+        .ilike('email', attendee.email);
+
+      if (existingOrders && existingOrders.length > 0) {
+        setOrderError(`An order has already been claimed for ${attendee.email}. Each attendee is limited to 1 order.`);
+        setSavingOrder(false);
+        return;
+      }
+    } catch (e) {
+      console.warn('Could not verify existing lunch order:', e);
+    }
+
     const voucherCode = `LV-${attendee.ticket_id}`;
     const voucherData = {
       voucherCode,
@@ -286,18 +302,22 @@ const LunchOrderSection: React.FC<LunchOrderSectionProps> = ({ isDarkBg = false,
     const savedKey = `genesis-lunch-voucher-${attendee.ticket_id}`;
     localStorage.setItem(savedKey, JSON.stringify(voucherData));
 
-    // Save to Supabase 'lunch' table (email, item, quantity)
+    // Save to Supabase 'lunch' table (id, email, item, quantity)
     try {
       const { error: mealErr } = await supabase
         .from('lunch')
         .insert({
+          id: attendee.ticket_id,
           email: attendee.email,
           item: mealObj.name,
           quantity: 1
         });
 
       if (mealErr) {
-        console.warn('Error inserting into lunch table:', mealErr);
+        console.error('Error inserting into lunch table:', mealErr);
+        setOrderError(`Failed to save order: ${mealErr.message}`);
+        setSavingOrder(false);
+        return;
       }
 
       // Update Registration table for compatibility
@@ -308,8 +328,11 @@ const LunchOrderSection: React.FC<LunchOrderSectionProps> = ({ isDarkBg = false,
 
       // Refresh live inventory stock counts
       await fetchStockCounts();
-    } catch (err) {
-      console.warn('Could not sync lunch order to Supabase:', err);
+    } catch (err: any) {
+      console.error('Could not sync lunch order to Supabase:', err);
+      setOrderError(`Error saving order: ${err?.message || 'Network error'}`);
+      setSavingOrder(false);
+      return;
     }
 
     setClaimedVoucher(voucherData);
@@ -569,13 +592,10 @@ const LunchOrderSection: React.FC<LunchOrderSectionProps> = ({ isDarkBg = false,
                 </div>
               </div>
 
-              <Button
-                variant="ghost"
-                onClick={() => setClaimedVoucher(null)}
-                className="mt-6 text-xs font-mono text-[var(--color-ink-dim)] hover:text-[var(--color-ink)]"
-              >
-                Change Lunch Selection ↻
-              </Button>
+              <div className="mt-6 flex items-center gap-2 px-4 py-2 rounded-lg bg-[var(--color-bg-soft)] border border-[var(--color-line)] text-xs font-mono text-[var(--color-ink-dim)]">
+                <span>🔒</span>
+                <span>Voucher Issued & Order Locked (Limit: 1 Order Per Email)</span>
+              </div>
             </div>
           ) : (
             /* Order Selection Form */
