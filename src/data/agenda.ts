@@ -119,7 +119,7 @@ export const agendaData: Record<string, AgendaTrack> = {
       {
         time: "14:00",
         label: "From Curiosity to Confidence: My Journey",
-        speaker: "Sneha",
+        speaker: "Tinkouree Bibi Shania",
         status: "upcoming",
         details: [
           { type: "list", emoji: "🌟", title: "Overcoming technical challenges", completed: false },
